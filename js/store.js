@@ -126,13 +126,40 @@ const DataStore = (() => {
     return state;
   }
 
-  function downloadExport() {
-    const blob = new Blob([exportJSON()], { type: 'application/json' });
+  async function downloadExport() {
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    const filename = `business-decision-lab_backup_${stamp}.json`;
+    const data = exportJSON();
+
+    // Running inside a Claude Artifact: browsers can't trigger a real
+    // download from a sandboxed artifact iframe, so use the platform's
+    // downloads capability (declared via capabilities:{downloads:true}
+    // when this page is published).
+    if (window.claude && typeof window.claude.use === 'function') {
+      try {
+        const downloads = await window.claude.use('downloads');
+        if (downloads) {
+          try {
+            await downloads.save({ filename, data });
+          } catch (e) {
+            if (!e || e.code !== 'declined') {
+              alert('匯出失敗：' + (e && e.message ? e.message : '未知錯誤'));
+            }
+          }
+          return;
+        }
+      } catch (e) {
+        // fall through to the plain-browser method below
+      }
+    }
+
+    // Plain static-site hosting (e.g. GitHub Pages / local file): normal
+    // browser download via a Blob URL.
+    const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
     a.href = url;
-    a.download = `business-decision-lab_backup_${stamp}.json`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
