@@ -627,8 +627,10 @@ const App = (() => {
       caseId: c.id,
       industry: c.industry,
       initialDecision: WS.initialDecisionText,
+      decisionAnswers: { ...WS.decisionAnswers },
       initialAssumptions: DataStore.getAssumptionLog(c.id).map((a) => `[${a.confidence}] ${a.text}`),
       initialPnlResult: WS.initialSnapshot ? WS.initialSnapshot.pnl : null,
+      challengeTranscript: Object.entries(WS.challengeAnswers).map(([persona, a]) => ({ persona, question: a.question, answer: a.answer })),
       questionsAskedByClaude: Object.values(WS.challengeAnswers).map((a) => a.question),
       userAnswers: Object.values(WS.challengeAnswers).map((a) => a.answer),
       corrections: WS.corrections,
@@ -728,26 +730,39 @@ const App = (() => {
   function renderPortfolio() {
     const sessions = DataStore.get().sessions;
     const notes = DataStore.get().portfolioNotes;
+    const published = sessions.filter((s) => notes[s.sessionId]?.published);
+    const unpublished = sessions.filter((s) => !notes[s.sessionId]?.published);
     root().innerHTML = `
       <h1 class="page-title">Portfolio</h1>
-      <p class="page-desc">可公開展示的去識別化案例摘要 — 系統方法論與能力成長證明</p>
+      <p class="page-desc">面試安全版本的案例研究 — 去識別化、可公開展示的商業判斷成果</p>
       <div class="card">
         <h3>系統方法論</h3>
-        <p class="small">Business Decision Lab 以固定財務引擎（見「公式小抄」）計算每次練習的P&amp;L，
+        <p class="small">Business Decision Lab 以固定財務引擎（見案例Workspace的「公式小抄」）計算每次練習的P&amp;L，
         並透過Case／Model／Challenge／Review四種模式，訓練將行銷決策連結到Revenue、Gross Profit與Operating Profit的判斷力。
-        所有Portfolio內容皆為去識別化之模擬練習成果，不代表任何真實公司之機密資料或真實財務數字。</p>
+        下方每一份案例研究皆為去識別化之模擬練習成果，不代表任何真實公司之機密資料或真實財務數字。</p>
       </div>
-      ${sessions.length ? sessions.slice().reverse().map((s) => {
+
+      ${published.length ? published.slice().reverse().map((s) => {
         const c = getCaseById(s.caseId);
-        const published = notes[s.sessionId]?.published;
-        return `<div class="card">
-          <div class="flex-between">
-            <h3 style="border:none;margin:0;">${esc(c?.title || s.caseId)} <span class="badge">${new Date(s.date).toLocaleDateString('zh-Hant-TW')}</span></h3>
-            <button class="btn small ${published ? 'secondary' : ''}" onclick="App.togglePortfolioPublish('${s.sessionId}')">${published ? '已加入Portfolio（點擊移除）' : '加入Portfolio'}</button>
-          </div>
-          ${published ? renderPortfolioWriteup(s, c) : '<p class="small muted">尚未加入Portfolio展示。</p>'}
+        return `<div class="case-study">
+          ${renderPortfolioWriteup(s, c)}
+          <div class="cs-toggle-row"><span class="small muted">已加入Portfolio展示</span>
+            <button class="btn secondary small" onclick="App.togglePortfolioPublish('${s.sessionId}')">從Portfolio移除</button></div>
         </div>`;
-      }).join('') : '<div class="card"><p class="muted">完成Review Mode並存檔後，Session會出現在這裡供你選擇是否加入Portfolio。</p></div>'}
+      }).join('') : ''}
+
+      ${unpublished.length ? `<div class="card">
+        <h3>尚未加入Portfolio的Session</h3>
+        ${unpublished.slice().reverse().map((s) => {
+          const c = getCaseById(s.caseId);
+          return `<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--line);">
+            <span class="small">${esc(c?.title || s.caseId)} <span class="muted">· ${new Date(s.date).toLocaleDateString('zh-Hant-TW')} · Final Score ${s.finalScore?.total ?? '—'}</span></span>
+            <button class="btn small" onclick="App.togglePortfolioPublish('${s.sessionId}')">加入Portfolio</button>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+
+      ${!sessions.length ? '<div class="card"><p class="muted">完成Review Mode並存檔後，Session會出現在這裡供你選擇是否加入Portfolio。</p></div>' : ''}
     `;
   }
   function togglePortfolioPublish(sessionId) {
@@ -757,20 +772,56 @@ const App = (() => {
   }
   function renderPortfolioWriteup(s, c) {
     const pnl = s.finalPnlResult || {};
-    const idx = pnl.companyNetRevenue ? 100 : 0;
     const toIndex = (v) => pnl.companyNetRevenue ? Math.round((v / pnl.companyNetRevenue) * 100) : 0;
+    const transcript = s.challengeTranscript && s.challengeTranscript.length
+      ? s.challengeTranscript
+      : (s.questionsAskedByClaude || []).map((q, i) => ({ persona: '', question: q, answer: (s.userAnswers || [])[i] || '' }));
+    const finalRecommendation = s.decisionAnswers && s.decisionAnswers[4] ? s.decisionAnswers[4] : s.finalDecision;
+
+    const section = (num, title, bodyHtml) => `
+      <div class="cs-section">
+        <div class="cs-num">${num}</div>
+        <div><h4>${esc(title)}</h4>${bodyHtml}</div>
+      </div>`;
+
     return `
-      <div class="disclosure">此為模擬練習成果，品牌與數字皆為虛構／假設情境，僅供能力展示，非真實公司財務資料。營收類數字已轉換為Index（Company Net Revenue = 100）呈現。</div>
-      <div class="row"><b>1. Business Challenge：</b>${esc(c?.managementDecision)}</div>
-      <div class="row"><b>2. Data and Assumptions：</b>${esc((s.initialAssumptions || []).join('；')) || '（假設請見案例Financial Inputs的Claude assumption標示）'}</div>
-      <div class="row"><b>3. Financial Model：</b>Company Net Revenue Index=100 · Gross Profit Index=${toIndex(pnl.grossProfit)} · Operating Profit Index=${toIndex(pnl.operatingProfit)}（Operating Margin ${fmtPct(pnl.operatingMarginPct || 0)}）</div>
-      <div class="row"><b>4. Strategic Options：</b>${esc((c?.decisionSubQuestions || []).join('；'))}</div>
-      <div class="row"><b>5. Decision：</b>${esc(s.finalDecision) || '—'}</div>
-      <div class="row"><b>6. Sensitivity Analysis：</b>詳見案例Workspace之Tornado分析與門檻分析（Top 3敏感變數）。</div>
-      <div class="row"><b>7. Claude Challenge：</b>${(s.questionsAskedByClaude || []).map((q, i) => `Q: ${esc(q)} → A: ${esc((s.userAnswers || [])[i] || '')}`).join('<br/>') || '—'}</div>
-      <div class="row"><b>8. Final Recommendation：</b>${esc(s.finalDecision) || '—'}</div>
-      <div class="row"><b>9. Key Learning：</b>${esc(s.transferableLesson) || '—'}</div>
-      <div class="row"><b>10. Transferable Application：</b>${esc(s.skillsDemonstrated) || '—'}</div>
+      <div class="cs-header">
+        <div class="cs-eyebrow">Simulated Business Case · Portfolio</div>
+        <div class="cs-title">${esc(c?.title || s.caseId)}</div>
+        <div class="cs-meta">
+          <span>${esc(getIndustry(c?.industry)?.labelZh || '')}</span>
+          <span>${esc(c?.mainSkill || '')}</span>
+          <span>${new Date(s.date).toLocaleDateString('zh-Hant-TW')}</span>
+          <span>Final Score ${s.finalScore?.total ?? '—'} / 100</span>
+        </div>
+      </div>
+      <div class="cs-body">
+        ${section('01', 'Business Challenge', `<p>${esc(c?.managementDecision)}</p>`)}
+        ${section('02', 'Data and Assumptions', (s.initialAssumptions || []).length
+          ? `<ul>${s.initialAssumptions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>`
+          : `<p class="muted">假設請見案例Financial Inputs中標示為Claude assumption的欄位。</p>`)}
+        ${section('03', 'Financial Model', `
+          <p class="muted small" style="margin-top:-4px;">以Company Net Revenue為基準（Index = 100）呈現，實際金額已去識別化。</p>
+          <div class="cs-stats">
+            <div class="cs-stat"><div class="n">100</div><div class="l">Net Revenue Index</div></div>
+            <div class="cs-stat"><div class="n">${toIndex(pnl.grossProfit)}</div><div class="l">Gross Profit Index</div></div>
+            <div class="cs-stat"><div class="n">${toIndex(pnl.operatingProfit)}</div><div class="l">Operating Profit Index</div></div>
+            <div class="cs-stat"><div class="n">${fmtPct(pnl.operatingMarginPct || 0)}</div><div class="l">Operating Margin</div></div>
+          </div>`)}
+        ${section('04', 'Strategic Options', `<ul>${(c?.decisionSubQuestions || []).map((q) => `<li>${esc(q)}</li>`).join('')}</ul>`)}
+        ${section('05', 'Decision', `<div class="cs-recommend">${esc(s.finalDecision) || '—'}</div>`)}
+        ${section('06', 'Sensitivity Analysis', `<p>此決策已針對售價、銷量、通路margin、成本與A&amp;P投入進行±1%／5%／10%敏感度分析，並找出使Operating Profit轉為虧損的關鍵門檻，確認建議在合理情境範圍內仍然成立。</p>`)}
+        ${section('07', 'Claude Challenge', transcript.length ? transcript.map((t) => `
+          <div class="cs-qa">
+            ${t.persona ? `<div class="persona">${esc(t.persona)}</div>` : ''}
+            <div class="q">"${esc(t.question)}"</div>
+            <div class="a">${esc(t.answer) || '—'}</div>
+          </div>`).join('') : '<p class="muted">—</p>')}
+        ${section('08', 'Final Recommendation', `<div class="cs-recommend">${esc(finalRecommendation) || '—'}</div>`)}
+        ${section('09', 'Key Learning', `<p>${esc(s.transferableLesson) || '—'}</p>`)}
+        ${section('10', 'Transferable Application', `<p>${esc(s.skillsDemonstrated) || '—'}</p>`)}
+      </div>
+      <div class="cs-disclosure">此為模擬練習成果，品牌、人物與數字皆為虛構／去識別化假設情境，僅供商業判斷能力展示，非任何真實公司之機密資料。</div>
     `;
   }
 
