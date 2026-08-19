@@ -173,6 +173,7 @@ const App = (() => {
           return `<div class="case-card" style="cursor:pointer;" onclick="App.navigate('workspace','${c.id}')">
             <div class="industry">${esc(getIndustry(c.industry)?.label)}</div>
             <div class="title">${esc(c.title)}</div>
+            ${c.titleEn ? `<div class="small muted" style="font-style:italic;margin-top:-4px;">${esc(c.titleEn)}</div>` : ''}
             <div class="skills">${esc(c.mainSkill)}</div>
             <div class="badges">
               <span class="badge">${esc(c.difficulty)}</span>
@@ -198,7 +199,7 @@ const App = (() => {
       coachMode: 'case',
       initialDecisionText: '', initialScoreEstimate: '',
       initialSnapshot: null,
-      challengeAnswers: {},
+      challengeAnswers: [],
       decisionAnswers: {},
       corrections: '',
       finalDecision: '',
@@ -235,7 +236,8 @@ const App = (() => {
       <div class="flex-between" style="margin-top:10px;">
         <div>
           <h1 class="page-title" style="margin-bottom:2px;">${esc(c.title)}</h1>
-          <p class="page-desc" style="margin-bottom:0;">${esc(getIndustry(c.industry)?.labelZh)} · ${esc(c.mainSkill)} · ${esc(c.difficulty)} · ${esc(c.version)}</p>
+          ${c.titleEn ? `<p class="small muted" style="margin:0 0 4px;font-style:italic;">${esc(c.titleEn)}</p>` : ''}
+          <p class="page-desc" style="margin-bottom:0;">${esc(getIndustry(c.industry)?.labelZh)}（${esc(getIndustry(c.industry)?.label)}） · ${esc(c.mainSkill)} · ${esc(c.difficulty)} · ${esc(c.version)}</p>
         </div>
       </div>
       <div class="disclosure">${esc(c.originNote || '')}</div>
@@ -304,16 +306,16 @@ const App = (() => {
             const sc = c.scenarios[k];
             return `<button class="scenario-pill ${WS.scenarioKey === k ? 'active' : ''}" onclick="App.applyScenario('${k}')">${esc(sc.labelZh)}</button>`;
           }).join('')}
-          <button class="scenario-pill ${WS.scenarioKey === 'custom' ? 'active' : ''}" disabled>自訂 Custom</button>
+          <span class="scenario-pill status ${WS.scenarioKey === 'custom' ? 'active' : ''}">自訂 Custom</span>
         </div>
-        <p class="small muted">${esc(c.scenarios[WS.scenarioKey]?.desc || '你已手動調整輸入值，目前為自訂情境。')}</p>
+        <p class="small muted">${WS.scenarioKey === 'custom'
+          ? '你已手動調整下方任一數值，目前為自訂情境（不需要另外點選「自訂」——直接修改數字就會自動切換到這裡）。'
+          : esc(c.scenarios[WS.scenarioKey]?.desc || '')}</p>
       </div>
 
       <div class="card">
-        <div class="flex-between"><h3 style="border:none;margin:0;">Financial Inputs</h3>
-          <button class="btn secondary small" onclick="App.toggleGlossary()">公式小抄 ?</button>
-        </div>
-        <div id="glossaryBox" style="display:none;"></div>
+        <h3>Financial Inputs</h3>
+        <p class="small muted">下方即時P&amp;L結果中，每個項目名稱旁的圓圈問號都可以點開，查看計算方式、商業意義與常見錯誤。</p>
         ${fieldGroups.map((g) => {
           const fields = c.financialInputs.fields.filter((f) => f.group === g);
           if (!fields.length) return '';
@@ -330,34 +332,42 @@ const App = (() => {
 
       <div class="card">
         <h3>Decision Questions</h3>
+        <p class="small muted">建議先寫下你自己的答案，再點「顯示參考答案」比較差異——參考答案是Base情境下的示範作答，不是唯一標準答案。</p>
         ${c.decisionQuestions.map((q, i) => `
           <div class="field">
             <label>${i + 1}. ${esc(q)}</label>
             <textarea onchange="App.onDecisionAnswerChange(${i}, this.value)">${esc(WS.decisionAnswers[i] || '')}</textarea>
+            ${c.referenceAnswers && c.referenceAnswers[i] ? `
+              <button type="button" class="btn secondary small" style="margin-top:6px;" onclick="App.toggleRefAnswer('dq-ref-${i}')">顯示參考答案</button>
+              <div id="dq-ref-${i}" class="ref-answer" hidden>
+                <div class="ref-answer-label">Claude參考答案（示範，非唯一標準答案）</div>
+                <p>${esc(c.referenceAnswers[i])}</p>
+              </div>` : ''}
           </div>`).join('')}
       </div>
     `;
-    renderGlossary();
     renderPnlOutputs(pnl, c);
   }
 
-  function renderGlossary() {
-    const box = document.getElementById('glossaryBox');
-    if (!box) return;
-    box.innerHTML = Engine.FORMULA_GLOSSARY.map((g) => `
-      <details class="glossary-item">
-        <summary>${esc(g.name)}（${esc(g.zh)}）</summary>
+  // 每個P&L項目旁的 (?) — 點開顯示該公式的計算方式／定義／商業意義／常見錯誤
+  function plRow(label, glossaryName, valueHtml, opts) {
+    opts = opts || {};
+    const g = Engine.FORMULA_GLOSSARY.find((x) => x.name === glossaryName);
+    const qm = g ? `<button type="button" class="qmark" onclick="App.toggleFormulaInfo(this)" aria-label="查看計算方式">?</button>` : '';
+    const valClass = 'val' + (opts.negative ? ' negative' : '');
+    const infoHtml = g ? `<tr class="formula-info"><td colspan="2"><div class="formula-detail">
         <div class="row"><b>計算方式：</b>${esc(g.formula)}</div>
         <div class="row"><b>定義：</b>${esc(g.definition)}</div>
         <div class="row"><b>商業意義：</b>${esc(g.meaning)}</div>
         <div class="row"><b>常見錯誤：</b>${esc(g.mistake)}</div>
         <div class="row"><b>適用產業：</b>${esc(g.industry)}</div>
-        <div class="row"><b>使用者可調整：</b>${g.adjustable ? '是' : '否（自動計算）'}</div>
-      </details>`).join('');
+      </div></td></tr>` : '';
+    return `<tr class="${opts.trClass || ''}"><td>${esc(label)}${qm}</td><td class="${valClass}">${valueHtml}</td></tr>${infoHtml}`;
   }
-  function toggleGlossary() {
-    const box = document.getElementById('glossaryBox');
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  function toggleFormulaInfo(btn) {
+    const row = btn.closest('tr');
+    const info = row && row.nextElementSibling;
+    if (info && info.classList.contains('formula-info')) info.classList.toggle('open');
   }
 
   function renderPnlOutputs(pnl, c) {
@@ -376,40 +386,40 @@ const App = (() => {
 
         <div class="table-wrap" style="margin-top:14px;">
           <table>
-            <thead><tr><th>P&amp;L 項目（小抄見上方「公式小抄」）</th><th>金額</th></tr></thead>
+            <thead><tr><th>P&amp;L 項目（點 ? 查看計算方式）</th><th>金額</th></tr></thead>
             <tbody>
-              <tr><td>Gross Sales</td><td class="val">${fmtMoney(pnl.grossSales)}</td></tr>
-              <tr><td>(-) Consumer Discount</td><td class="val negative">-${fmtMoney(pnl.consumerDiscount)}</td></tr>
-              <tr><td>(-) Returns</td><td class="val negative">-${fmtMoney(pnl.returns)}</td></tr>
-              <tr class="subtotal"><td>= Net Consumer Sales</td><td class="val">${fmtMoney(pnl.netConsumerSales)}</td></tr>
-              <tr><td>(-) Channel Margin</td><td class="val negative">-${fmtMoney(pnl.channelMargin)}</td></tr>
-              <tr><td>(-) Rebates</td><td class="val negative">-${fmtMoney(pnl.rebates)}</td></tr>
-              <tr class="subtotal"><td>= Company Net Revenue</td><td class="val">${fmtMoney(pnl.companyNetRevenue)}</td></tr>
-              <tr><td>(-) COGS</td><td class="val negative">-${fmtMoney(pnl.cogs)}</td></tr>
-              <tr class="subtotal"><td>= Gross Profit（Gross Margin ${fmtPct(pnl.grossMarginPct)}）</td><td class="val">${fmtMoney(pnl.grossProfit)}</td></tr>
-              <tr><td>(-) Total A&amp;P</td><td class="val negative">-${fmtMoney(pnl.totalAP)}</td></tr>
-              <tr><td>(-) Trade Marketing</td><td class="val negative">-${fmtMoney(pnl.tradeMarketing)}</td></tr>
-              <tr><td>(-) Variable Operating Cost</td><td class="val negative">-${fmtMoney(pnl.variableOperatingCost)}</td></tr>
-              <tr class="subtotal"><td>= Contribution Profit</td><td class="val">${fmtMoney(pnl.contributionProfit)}</td></tr>
-              <tr><td>(-) Allocated Fixed Cost</td><td class="val negative">-${fmtMoney(pnl.allocatedFixedCost)}</td></tr>
-              <tr class="final"><td>= Operating Profit（Operating Margin ${fmtPct(pnl.operatingMarginPct)}）</td><td class="val">${fmtMoney(pnl.operatingProfit)}</td></tr>
+              ${plRow('Gross Sales', 'Gross Sales', fmtMoney(pnl.grossSales))}
+              ${plRow('(-) Consumer Discount', 'Consumer Discount', '-' + fmtMoney(pnl.consumerDiscount), { negative: true })}
+              ${plRow('(-) Returns', 'Returns', '-' + fmtMoney(pnl.returns), { negative: true })}
+              ${plRow('= Net Consumer Sales', 'Net Consumer Sales', fmtMoney(pnl.netConsumerSales), { trClass: 'subtotal' })}
+              ${plRow('(-) Channel Margin', 'Channel Margin', '-' + fmtMoney(pnl.channelMargin), { negative: true })}
+              ${plRow('(-) Rebates', 'Rebates', '-' + fmtMoney(pnl.rebates), { negative: true })}
+              ${plRow('= Company Net Revenue', 'Company Net Revenue', fmtMoney(pnl.companyNetRevenue), { trClass: 'subtotal' })}
+              ${plRow('(-) COGS', 'COGS', '-' + fmtMoney(pnl.cogs), { negative: true })}
+              ${plRow(`= Gross Profit（Gross Margin ${fmtPct(pnl.grossMarginPct)}）`, 'Gross Profit / Gross Margin %', fmtMoney(pnl.grossProfit), { trClass: 'subtotal' })}
+              ${plRow('(-) Total A&P', 'Total A&P', '-' + fmtMoney(pnl.totalAP), { negative: true })}
+              ${plRow('(-) Trade Marketing', 'Trade Marketing', '-' + fmtMoney(pnl.tradeMarketing), { negative: true })}
+              ${plRow('(-) Variable Operating Cost', 'Variable Operating Cost', '-' + fmtMoney(pnl.variableOperatingCost), { negative: true })}
+              ${plRow('= Contribution Profit', 'Contribution Profit', fmtMoney(pnl.contributionProfit), { trClass: 'subtotal' })}
+              ${plRow('(-) Allocated Fixed Cost', 'Allocated Fixed Cost', '-' + fmtMoney(pnl.allocatedFixedCost), { negative: true })}
+              ${plRow(`= Operating Profit（Operating Margin ${fmtPct(pnl.operatingMarginPct)}）`, 'Operating Profit / Operating Margin %', fmtMoney(pnl.operatingProfit), { trClass: 'final' })}
             </tbody>
           </table>
         </div>
 
         <h4>Break-even &amp; 單位經濟</h4>
         <div class="table-wrap"><table><tbody>
-          <tr><td>Contribution per Unit</td><td class="val">${fmtMoney(pnl.contributionPerUnit)}</td></tr>
-          <tr><td>Fixed Launch Investment（一次性上市投資）</td><td class="val">${fmtMoney(pnl.fixedLaunchInvestment)}</td></tr>
-          <tr><td>Break-even Units</td><td class="val">${isFinite(pnl.breakEvenUnits) ? fmt(pnl.breakEvenUnits) + ' 台' : '此單位經濟無法回本'}</td></tr>
-          <tr><td>A&amp;P as % of Revenue</td><td class="val">${fmtPct(pnl.apPctOfRevenue)}</td></tr>
+          ${plRow('Contribution per Unit', 'Contribution per Unit', fmtMoney(pnl.contributionPerUnit))}
+          ${plRow('Fixed Launch Investment（一次性上市投資）', 'Break-even Units', fmtMoney(pnl.fixedLaunchInvestment))}
+          ${plRow('Break-even Units', 'Break-even Units', isFinite(pnl.breakEvenUnits) ? fmt(pnl.breakEvenUnits) + ' 台' : '此單位經濟無法回本')}
+          ${plRow('A&P as % of Revenue', 'A&P as % of Revenue', fmtPct(pnl.apPctOfRevenue))}
         </tbody></table></div>
 
         <h4>行銷效率（獨立假設，非核心P&amp;L）</h4>
         <div class="table-wrap"><table><tbody>
-          <tr><td>ROAS = Attributed Revenue ÷ Paid Media</td><td class="val">${pnl.roas.toFixed(2)}x</td></tr>
-          <tr><td>Incremental Gross Profit</td><td class="val">${fmtMoney(pnl.incrementalGrossProfit)}</td></tr>
-          <tr><td>ROMI</td><td class="val">${fmtPct(pnl.romi)}</td></tr>
+          ${plRow('ROAS = Attributed Revenue ÷ Paid Media', 'ROAS', pnl.roas.toFixed(2) + 'x')}
+          ${plRow('Incremental Gross Profit', 'Incremental Gross Profit', fmtMoney(pnl.incrementalGrossProfit))}
+          ${plRow('ROMI', 'ROMI', fmtPct(pnl.romi))}
         </tbody></table></div>
         <p class="small muted">⚠️ ROAS高不代表獲利高：ROAS只計算歸因營收、未扣成本；判斷A&amp;P是否合理請以ROMI（用incremental gross profit）為準。</p>
       </div>
@@ -521,19 +531,28 @@ const App = (() => {
       return;
     }
     if (WS.coachMode === 'challenge') {
-      const qs = CHALLENGE_QUESTIONS[c.id] || [];
-      const answeredCount = Object.keys(WS.challengeAnswers).length;
-      const current = qs[answeredCount];
+      const queue = getChallengeQueue(c.id);
+      const answeredCount = WS.challengeAnswers.length;
+      const current = queue[answeredCount];
+      const lastAnswered = WS.challengeAnswers[answeredCount - 1];
       box.innerHTML = `<div class="mode-intro">${esc(MODE_INTRO.challenge)}</div>
+        ${lastAnswered && lastAnswered.referenceAnswer ? `
+          <div class="field">
+            <button type="button" class="btn secondary small" onclick="App.toggleRefAnswer('challenge-ref')">顯示Claude參考回答</button>
+            <div id="challenge-ref" class="ref-answer" hidden>
+              <div class="ref-answer-label">Claude參考回答（示範，非唯一標準答案）</div>
+              <p>${esc(lastAnswered.referenceAnswer)}</p>
+            </div>
+          </div>` : ''}
         ${current ? `
           <div class="challenge-card">
-            <div class="persona">${esc(current.personaZh)}</div>
+            <div class="persona">${esc(current.personaZh)}${current.isMain ? '' : ' · 追問'}</div>
             <div class="q">${esc(current.question)}</div>
             <textarea id="challengeAnswerBox" placeholder="輸入你的回答..."></textarea>
-            <button class="btn small" style="margin-top:6px;" onclick="App.answerChallenge('${current.persona}')">回答並記錄</button>
+            <button class="btn small" style="margin-top:6px;" onclick="App.answerChallenge()">回答並記錄</button>
           </div>` : `<p class="small muted">此案例的Challenge問題已全部回答完畢。</p>`}
         <h4>已回答紀錄</h4>
-        ${Object.entries(WS.challengeAnswers).map(([p, a]) => `<div class="challenge-card"><div class="persona">${esc(p)}</div><div class="q small">${esc(a.question)}</div><div class="small">→ ${esc(a.answer)}</div></div>`).join('') || '<p class="muted small">尚無紀錄。</p>'}
+        ${WS.challengeAnswers.length ? WS.challengeAnswers.map((a) => `<div class="challenge-card"><div class="persona">${esc(a.personaZh)}${a.isMain ? '' : ' · 追問'}</div><div class="q small">${esc(a.question)}</div><div class="small">→ ${esc(a.answer)}</div></div>`).join('') : '<p class="muted small">尚無紀錄。</p>'}
         <div class="field"><label>挑戰後你修正了哪些假設或數字？（Corrections）</label>
           <textarea onchange="App.onCorrectionsChange(this.value)">${esc(WS.corrections)}</textarea></div>`;
       return;
@@ -563,16 +582,35 @@ const App = (() => {
     DataStore.addAssumptionLog(WS.caseId, { text, confidence, ts: new Date().toISOString() });
     renderCoachBody(getCaseById(WS.caseId));
   }
-  function answerChallenge(persona) {
-    const qs = CHALLENGE_QUESTIONS[WS.caseId] || [];
-    const q = qs.find((x) => x.persona === persona);
+  // 把每個角色的主問題與追問攤平成一個依序進行的queue，回答完主問題後可顯示參考回答
+  function getChallengeQueue(caseId) {
+    const personas = CHALLENGE_QUESTIONS[caseId] || [];
+    const queue = [];
+    personas.forEach((p) => {
+      queue.push({ persona: p.persona, personaZh: p.personaZh, question: p.question, isMain: true, referenceAnswer: p.referenceAnswer });
+      (p.followUps || []).forEach((fu) => queue.push({ persona: p.persona, personaZh: p.personaZh, question: fu, isMain: false }));
+    });
+    return queue;
+  }
+  function answerChallenge() {
+    const queue = getChallengeQueue(WS.caseId);
+    const current = queue[WS.challengeAnswers.length];
+    if (!current) return;
     const answer = document.getElementById('challengeAnswerBox').value.trim();
     if (!answer) return;
-    WS.challengeAnswers[persona] = { question: q.question, answer };
+    WS.challengeAnswers.push({
+      persona: current.persona, personaZh: current.personaZh, question: current.question,
+      answer, isMain: current.isMain,
+      referenceAnswer: current.isMain ? current.referenceAnswer : undefined,
+    });
     persistWS();
     renderCoachBody(getCaseById(WS.caseId));
   }
   function onCorrectionsChange(v) { WS.corrections = v; persistWS(); }
+  function toggleRefAnswer(id) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = !el.hidden;
+  }
 
   function renderReviewMode(c) {
     const total = computeRubricTotal();
@@ -630,9 +668,9 @@ const App = (() => {
       decisionAnswers: { ...WS.decisionAnswers },
       initialAssumptions: DataStore.getAssumptionLog(c.id).map((a) => `[${a.confidence}] ${a.text}`),
       initialPnlResult: WS.initialSnapshot ? WS.initialSnapshot.pnl : null,
-      challengeTranscript: Object.entries(WS.challengeAnswers).map(([persona, a]) => ({ persona, question: a.question, answer: a.answer })),
-      questionsAskedByClaude: Object.values(WS.challengeAnswers).map((a) => a.question),
-      userAnswers: Object.values(WS.challengeAnswers).map((a) => a.answer),
+      challengeTranscript: WS.challengeAnswers.map((a) => ({ persona: a.personaZh + (a.isMain ? '' : ' · 追問'), question: a.question, answer: a.answer })),
+      questionsAskedByClaude: WS.challengeAnswers.map((a) => a.question),
+      userAnswers: WS.challengeAnswers.map((a) => a.answer),
       corrections: WS.corrections,
       finalDecision: WS.finalDecision,
       finalPnlResult: finalPnl,
@@ -876,10 +914,10 @@ const App = (() => {
     init, navigate,
     setLibraryFilter,
     onInputChange, applyScenario, onDecisionAnswerChange,
-    toggleGlossary,
+    toggleFormulaInfo,
     setCoachMode,
     onInitialDecisionChange, onInitialScoreChange, snapshotInitial, addAssumptionEntry,
-    answerChallenge, onCorrectionsChange,
+    answerChallenge, onCorrectionsChange, toggleRefAnswer,
     onRubricScoreChange, onRubricNoteChange, toggleMistakeTag, onFinalDecisionChange, onConfChange, onMetaChange,
     finalizeSession,
     togglePortfolioPublish,

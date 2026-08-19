@@ -213,6 +213,8 @@ td.val.negative { color: var(--bad); }
   border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 20px; padding: 6px 14px; font-size: 12.5px;
 }
 .scenario-pill.active { background: var(--navy); color: var(--on-brand); border-color: var(--navy); }
+.scenario-pill.status { display: inline-block; background: transparent; border-style: dashed; color: var(--muted); cursor: default; }
+.scenario-pill.status.active { background: var(--navy); color: var(--on-brand); border-style: solid; border-color: var(--navy); }
 
 /* ---------- Sensitivity bars ---------- */
 .sens-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -271,6 +273,25 @@ hr.sep { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 .glossary-item summary { cursor: pointer; font-weight: 600; color: var(--heading); font-size: 13px; }
 .glossary-item .row { font-size: 12px; margin: 4px 0; }
 .glossary-item .row b { color: var(--ink-2); }
+
+/* ---------- Inline formula help (?) ---------- */
+.qmark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; margin-left: 5px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--muted); background: transparent; color: var(--muted);
+  font-size: 10.5px; font-weight: 700; line-height: 1; vertical-align: middle; cursor: pointer;
+}
+.qmark:hover { border-color: var(--navy-2); color: var(--navy-2); }
+tr.formula-info { display: none; }
+tr.formula-info.open { display: table-row; }
+tr.formula-info td { background: var(--surface-2); white-space: normal; text-align: left; padding: 10px 12px; }
+.formula-detail .row { font-size: 12px; margin: 3px 0; }
+.formula-detail .row b { color: var(--ink-2); }
+
+/* ---------- Reference answers ---------- */
+.ref-answer { margin-top: 8px; padding: 10px 12px; background: var(--surface-2); border-left: 3px solid var(--good); border-radius: var(--radius); font-size: 12.5px; line-height: 1.65; }
+.ref-answer p { margin: 0; }
+.ref-answer-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
 
 textarea.wide { width: 100%; }
 .confidence-badge.High { color: var(--good); }

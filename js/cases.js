@@ -103,7 +103,7 @@ CASES.push({
   missingInformation: [
     { item: '通路實際簽約margin與各平台個別條件（非加權平均）', why: '目前用單一加權平均28%簡化多通路差異，可能掩蓋單一通路虧損。', confidence: 'Low' },
     { item: '競品實際上市促銷節奏與投入規模', why: '會直接影響Cirrus X1 Pro的share of voice與所需A&P規模。', confidence: 'Low' },
-    { item: '实际保固與退貨歷史數據（同集團其他市場）', why: '目前returnRate與otherVariablePerUnit為假設值，需以實際數據校正。', confidence: 'Medium' },
+    { item: '實際保固與退貨歷史數據（同集團其他市場）', why: '目前returnRate與otherVariablePerUnit為假設值，需以實際數據校正。', confidence: 'Medium' },
     { item: 'HQ對台灣市場的資源上限與是否有集團採購成本優勢', why: '會影響unitCOGS與可動用的A&P總額。', confidence: 'Low' },
     { item: '消費者對此價格帶的實際支付意願（WTP）研究', why: '目前定價假設未經在地定量調查驗證。', confidence: 'Medium' },
   ],
@@ -114,6 +114,14 @@ CASES.push({
     '建議採取什麼行動？',
     '如果最關鍵變數惡化，決策是否改變？',
     '如何用三句話向GM或CFO提出建議？',
+  ],
+  // 參考答案：以Base情境數字為示範計算，非唯一標準答案。建議先寫下自己的答案，再點開比較差異。
+  referenceAnswers: [
+    '這不是單純的「要不要用NT$29,900上市」的定價題，而是：在品牌於台灣完全沒有知名度、通路要求至少28%margin、且退貨與物流成本都不確定的情況下，能不能用一個「定價＋折扣＋A&P」的組合，同時做到（a）建立長期市佔基礎、（b）不淪為用毛利換銷量的短視操作。核心張力在於：把價格壓低或折扣加深可以更快衝量，但會侵蝕本來就不厚的毛利（Base情境Gross Margin約49.0%）與Operating Margin（Base情境約37.7%）；把價格與毛利守住，則要靠更精準的A&P與通路談判去補銷量，時間風險更高。',
+    '1) 首年目標銷量6,000台——這是Claude assumption，沒有實地市調驗證，一旦高估，break-even以外的所有獲利結論都會落空。2) 通路margin是否能長期維持在28%——這是通路關係的核心變數，本案例第六個決策已經預告通路可能要求再加5個百分點，敏感度分析顯示這是影響Operating Profit最大的變數之一。3) 退貨率3%與物流成本假設——大型家電的退貨處理成本經常被低估，一旦上升到6%，會同時侵蝕Net Consumer Sales與Variable Operating Cost兩處，是雙重打擊。',
+    '在Base情境的假設下，建議上市，但不要把8%折扣當成常態——把它當成上市期的「流量觸發器」，同時把A&P配置向KOL／PR與paid media傾斜（而非單純加深折扣）。Contribution per Unit（約NT$8,378／台）在28%通路margin下仍為正，Break-even只需約871台，遠低於6,000台目標，代表下行風險可控；但必須同步啟動退貨率與通路實際簽約條件的驗證，因為這兩個假設一旦錯誤，會直接吃掉37.7%的Operating Margin緩衝。',
+    '如果通路margin從28%被迫調整到33%（Conservative情境），Operating Profit會明顯壓縮；這時決策應該改變——不是硬撐原定價，而是三選一：(a) 溫和調漲List Price、(b) 下修A&P但保留KOL/PR這類轉換效率較高的項目、(c) 針對margin要求最高的單一通路，考慮縮小合作規模、把資源集中在margin較合理的通路。單純「降價衝量」或「無限加深折扣」都不是好選項，因為那會同時吃掉毛利與Operating Profit兩層緩衝。',
+    '第一句（問題）：Cirrus X1 Pro在台灣的上市決策，核心風險不是定價本身，而是通路margin與實際銷量兩個尚未驗證的假設。第二句（建議）：在通路margin維持28%的前提下，建議以NT$29,900、8%上市折扣執行，Break-even僅約871台，相對6,000台目標有安全邊際，可以上市。第三句（但書）：但若通路margin被迫上修至33%或退貨率超過6%，需要重新檢視定價與A&P配置，而非直接吸收在Operating Profit上——建議一個月內完成通路合約與退貨數據驗證，作為正式拍板前的checkpoint。',
   ],
 
   scenarios: {
