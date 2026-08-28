@@ -1,201 +1,2896 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GTM Marketing Dashboard - Pro Version</title>
-    <style>
-        :root {
-            --primary-indigo: #4B0082;
-            --secondary-black: #000000;
-            --accent-grey: #F5F5F5;
-            --text-grey: #333333;
-        }
+<meta charset="UTF-8" />
+<title>Business Decision Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* Business Decision Lab — visual system
+   A commercial-finance instrument, not a dashboard toy: navy/ink surfaces,
+   a serif for authority (Fraunces), plain sans for working text (IBM Plex Sans),
+   monospaced tabular figures for every P&L number (IBM Plex Mono). */
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, "Microsoft JhengHei", sans-serif;
-            background-color: var(--accent-grey);
-            color: var(--secondary-black);
-            margin: 0;
-            padding: 10px; /* 手機上邊距縮小 */
-            -webkit-font-smoothing: antialiased;
-        }
+:root {
+  /* brand blocks — topbar, kpi tiles, primary buttons: deliberately constant
+     across themes, always paired with --on-brand text */
+  --navy: #10233f;
+  --tile-alt: #3a4048;
+  --on-brand: #ffffff;
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 20px; /* 手機上內距縮小 */
-            border-top: 6px solid var(--primary-indigo);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 4px;
-        }
+  /* adaptive accent — links, small fills, thin borders */
+  --navy-2: #1c3a63;
+  /* navy used as TEXT sitting on an adaptive surface (headings, labels) */
+  --heading: #10233f;
 
-        header {
-            border-bottom: 2px solid var(--secondary-black);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            text-align: center; /* 標題置中 */
-        }
+  /* adaptive surfaces + text */
+  --ink: #12161c;
+  --ink-2: #333c46;
+  --muted: #6b7280;
+  --paper: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --line: #dde1e6;
 
-        h1 { color: var(--primary-indigo); font-weight: bold; margin: 0; font-size: 1.5em; } /* 縮小標題 */
-        p.subtitle { color: var(--text-grey); font-size: 0.8em; margin-top: 5px; line-height: 1.4; }
+  /* semantic status — separate from the brand accent */
+  --good: #1f6f43;
+  --bad: #a5311f;
+  --warn: #8a5a10;
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* 預設手機為單欄 */
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+  --disclosure-bg: #fff8ea;
+  --disclosure-border: #e8d9ab;
+  --disclosure-text: #6b5311;
 
-        .control-panel, .result-panel {
-            padding: 15px;
-            border: 1px solid #eee;
-            background-color: #fafafa;
-            border-radius: 4px;
-        }
+  --radius: 4px;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+}
 
-        label { display: block; font-weight: bold; margin-bottom: 15px; color: var(--primary-indigo); font-size: 0.95em; }
-        
-        input[type=range] {
-            width: 100%;
-            accent-color: var(--primary-indigo);
-            margin-bottom: 15px;
-            height: 25px; /* 增加高度方便觸控 */
-            cursor: pointer;
-        }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --navy-2: #6fa0dc;
+    --heading: #9dc1ec;
+    --ink: #e8ecf1;
+    --ink-2: #c3ccd6;
+    --muted: #8b97a8;
+    --paper: #0b121c;
+    --surface: #121c2b;
+    --surface-2: #182333;
+    --line: #263450;
+    --good: #4fbf8a;
+    --bad: #e2685a;
+    --warn: #d8a13f;
+    --disclosure-bg: #2c2410;
+    --disclosure-border: #5c4a1a;
+    --disclosure-text: #e8c877;
+  }
+}
+:root[data-theme="dark"] {
+  --navy-2: #6fa0dc;
+  --heading: #9dc1ec;
+  --ink: #e8ecf1;
+  --ink-2: #c3ccd6;
+  --muted: #8b97a8;
+  --paper: #0b121c;
+  --surface: #121c2b;
+  --surface-2: #182333;
+  --line: #263450;
+  --good: #4fbf8a;
+  --bad: #e2685a;
+  --warn: #d8a13f;
+  --disclosure-bg: #2c2410;
+  --disclosure-border: #5c4a1a;
+  --disclosure-text: #e8c877;
+}
 
-        #budgetValue { font-weight: bold; text-align: center; margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
 
-        .kpi-box {
-            background-color: var(--primary-indigo);
-            color: white;
-            padding: 20px 10px;
-            text-align: center;
-            border-radius: 4px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+}
+a { color: var(--navy-2); }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: 13px; color: var(--ink); }
+button, .btn, a, input, select, textarea { transition: background-color .15s ease, color .15s ease, border-color .15s ease; }
+:focus-visible { outline: 2px solid var(--navy-2); outline-offset: 2px; }
 
-        .kpi-value { font-size: 2.5em; font-weight: bold; line-height: 1; margin-bottom: 5px; }
-        .kpi-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+/* ---------- Top bar (deliberately theme-invariant: a fixed dark instrument rail) ---------- */
+.topbar {
+  background: var(--navy);
+  color: var(--on-brand);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.topbar .brand { display: flex; flex-direction: column; }
+.topbar .brand .en { font-family: var(--font-display); font-weight: 600; font-size: 17px; letter-spacing: 0.2px; }
+.topbar .brand .zh { font-size: 12px; color: #b9c4d6; }
+.topbar .brand .sub { font-size: 10.5px; color: #8ea0bd; font-style: italic; }
 
-        /* 表格響應式處理 */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto; /* 超出時可左右滑動 */
-            -webkit-overflow-scrolling: touch;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+.tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+.tabs button {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #c7d1e0;
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: var(--radius);
+}
+.tabs button:hover { background: rgba(255,255,255,0.08); color: var(--on-brand); }
+.tabs button.active { background: var(--on-brand); color: var(--navy); font-weight: 600; }
 
-        .milestone-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 500px; /* 確保表格在手機上不被過度擠壓 */
-        }
+.topbar-right { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: #9fb0c9; }
+.save-indicator { display:flex; align-items:center; gap:6px; }
+.save-dot { width: 7px; height: 7px; border-radius: 50%; background: #5cb87a; display: inline-block; }
 
-        .milestone-table th {
-            background-color: var(--secondary-black);
-            color: white;
-            padding: 12px 10px;
-            text-align: left;
-            font-size: 0.9em;
-            white-space: nowrap; /* 標題不換行 */
-        }
+/* ---------- Layout ---------- */
+main { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.page-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--heading); margin: 0 0 4px; text-wrap: balance; }
+.page-desc { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
 
-        .milestone-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.card h3 { font-family: var(--font-display); margin: 0 0 10px; font-size: 15px; font-weight: 600; color: var(--heading); border-bottom: 1px solid var(--line); padding-bottom: 8px; text-wrap: balance; }
+.card h4 { margin: 14px 0 8px; font-size: 12.5px; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.4px; }
 
-        .high-cp { color: var(--primary-indigo); font-weight: bold; }
+.grid { display: grid; gap: 16px; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 1100px) { .grid-3 { grid-template-columns: 300px 1fr 320px; align-items: start; } }
+.grid-2 { grid-template-columns: 1fr; }
+@media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+.grid-4 { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 900px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
 
-        /* 當螢幕寬度大於 768px 時（電腦版） */
-        @media (min-width: 768px) {
-            body { padding: 20px; }
-            .container { padding: 40px; border-top-width: 8px; }
-            header { text-align: left; }
-            h1 { font-size: 2em; }
-            p.subtitle { font-size: 0.9em; }
-            .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .kpi-value { font-size: 3em; }
-            .table-responsive { border: none; overflow-x: visible; }
-            .milestone-table { border: none; }
-        }
-    </style>
+/* ---------- KPI tiles (status blocks: constant saturated color + white text) ---------- */
+.kpi-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 900px) { .kpi-row { grid-template-columns: repeat(4, 1fr); } }
+.kpi-tile { background: var(--navy); color: var(--on-brand); border-radius: var(--radius); padding: 14px; }
+.kpi-tile.alt { background: var(--tile-alt); }
+.kpi-tile .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 600; }
+.kpi-tile .l { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+.kpi-tile.neg { background: var(--bad); }
+.kpi-tile.pos { background: var(--good); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--navy);
+  background: var(--navy);
+  color: var(--on-brand);
+  font-size: 13px;
+  font-weight: 600;
+}
+.btn:hover { background: var(--navy-2); border-color: var(--navy-2); }
+.btn.secondary { background: var(--surface); color: var(--heading); border-color: var(--line); }
+.btn.secondary:hover { background: var(--surface-2); }
+.btn.danger { background: var(--surface); color: var(--bad); border-color: var(--bad); }
+.btn.small { padding: 4px 9px; font-size: 12px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Forms ---------- */
+.field { margin-bottom: 10px; }
+.field label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 3px; }
+.field input[type=text], .field input[type=number], .field select, .field textarea {
+  width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+}
+/* 全站textarea統一規則（原本只有.field內的textarea有樣式，#challengeAnswerBox／#assumeText等
+   沒被.field包住的textarea會退回瀏覽器預設的小方塊，在手機上尤其明顯）。
+   min-height + overflow:hidden + JS自動增高（見下方autoGrowTextarea）三者搭配，
+   讓填寫中的內容一律用「頁面捲動」看到，不再需要在小框框內部另外捲動。 */
+textarea {
+  width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--line);
+  border-radius: var(--radius); background: var(--surface); min-height: 56px; resize: vertical; overflow-y: hidden;
+}
+.field textarea { min-height: 56px; resize: vertical; overflow-y: hidden; }
+.tag {
+  display: inline-block; font-size: 10.5px; padding: 1px 6px; border-radius: 10px; margin-left: 6px;
+  border: 1px solid var(--line); color: var(--muted); vertical-align: middle;
+}
+.tag.case { color: var(--navy-2); border-color: var(--navy-2); }
+.tag.assumption { color: var(--warn); border-color: var(--warn); }
+.tag.public { color: var(--good); border-color: var(--good); }
+.tag.user { color: var(--ink-2); border-color: var(--ink-2); }
+.field .note { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* ---------- Table ---------- */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 7px 9px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+td.val, .kpi-tile .v, .sens-val, .score-total { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+thead th { background: var(--surface-2); color: var(--ink-2); font-weight: 600; font-size: 11.5px; text-transform: uppercase; }
+tr.subtotal td { font-weight: 700; border-top: 2px solid var(--ink-2); }
+tr.final td { font-weight: 700; background: var(--surface-2); }
+tr.neg td.val { color: var(--bad); }
+td.val.negative { color: var(--bad); }
+
+/* ---------- Scenario pills ---------- */
+.scenario-pills { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.scenario-pill {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 20px; padding: 6px 14px; font-size: 12.5px;
+}
+.scenario-pill.active { background: var(--navy); color: var(--on-brand); border-color: var(--navy); }
+.scenario-pill.status { display: inline-block; background: transparent; border-style: dashed; color: var(--muted); cursor: default; }
+.scenario-pill.status.active { background: var(--navy); color: var(--on-brand); border-style: solid; border-color: var(--navy); }
+
+/* ---------- Sensitivity bars ---------- */
+.sens-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.sens-label { width: 150px; font-size: 12px; flex-shrink: 0; }
+.sens-track { flex: 1; height: 14px; background: var(--surface-2); border-radius: 3px; position: relative; }
+.sens-bar { position: absolute; top: 0; bottom: 0; background: var(--navy-2); border-radius: 3px; }
+.sens-bar.neg { background: var(--bad); }
+.sens-val { width: 110px; text-align: right; font-size: 11.5px; color: var(--ink-2); flex-shrink: 0; }
+
+/* ---------- Coach panel ---------- */
+.coach-mode-tabs { display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap; }
+.coach-mode-tabs button {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink-2);
+  padding: 5px 9px; font-size: 12px;
+}
+.coach-mode-tabs button.active { background: var(--navy); color: var(--on-brand); border-color: var(--navy); }
+.mode-intro { font-size: 12.5px; color: var(--ink-2); background: var(--surface-2); padding: 10px; border-radius: var(--radius); margin-bottom: 12px; }
+.challenge-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; margin-bottom: 10px; }
+.challenge-card .persona { font-weight: 700; color: var(--heading); font-size: 12px; }
+.challenge-card .q { margin: 6px 0; font-size: 13px; }
+.assumption-entry { border-left: 3px solid var(--navy-2); padding: 6px 10px; margin-bottom: 8px; background: var(--surface-2); font-size: 12px; }
+
+/* ---------- Rubric ---------- */
+.rubric-row { display: grid; grid-template-columns: 1fr 90px; gap: 10px; align-items: center; margin-bottom: 10px; }
+.rubric-row .rlabel { font-size: 12.5px; }
+.rubric-row .rweight { color: var(--muted); font-size: 11px; }
+.score-total { font-size: 28px; font-weight: 700; color: var(--heading); }
+
+/* ---------- Library cards ---------- */
+.case-card {
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 6px;
+}
+.case-card .industry { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.case-card .title { font-family: var(--font-display); font-weight: 600; color: var(--heading); font-size: 15px; text-wrap: balance; }
+.case-card .skills { font-size: 11.5px; color: var(--ink-2); }
+.case-card .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.badge { font-size: 10.5px; padding: 2px 7px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
+.badge.locked { color: var(--muted); }
+
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-bar select { padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+
+/* ---------- misc ---------- */
+.muted { color: var(--muted); }
+.small { font-size: 11.5px; }
+hr.sep { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pill-list { display: flex; gap: 6px; flex-wrap: wrap; }
+.footer-note { text-align: center; color: var(--muted); font-size: 11px; padding: 30px 10px 10px; }
+.disclosure {
+  background: var(--disclosure-bg); border: 1px solid var(--disclosure-border); color: var(--disclosure-text); padding: 10px 12px; border-radius: var(--radius); font-size: 12px; margin-bottom: 14px;
+}
+.source-box { font-size: 11.5px; background: var(--surface-2); border-radius: var(--radius); padding: 8px 10px; margin-top: 8px; }
+
+.glossary-item { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.glossary-item summary { cursor: pointer; font-weight: 600; color: var(--heading); font-size: 13px; }
+.glossary-item .row { font-size: 12px; margin: 4px 0; }
+.glossary-item .row b { color: var(--ink-2); }
+
+/* ---------- Inline formula help (?) ---------- */
+.qmark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; margin-left: 5px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--muted); background: transparent; color: var(--muted);
+  font-size: 10.5px; font-weight: 700; line-height: 1; vertical-align: middle; cursor: pointer;
+}
+.qmark:hover { border-color: var(--navy-2); color: var(--navy-2); }
+tr.formula-info { display: none; }
+tr.formula-info.open { display: table-row; }
+tr.formula-info td { background: var(--surface-2); white-space: normal; text-align: left; padding: 10px 12px; }
+.formula-detail .row { font-size: 12px; margin: 3px 0; }
+.formula-detail .row b { color: var(--ink-2); }
+
+/* ---------- Reference answers ---------- */
+.ref-answer { margin-top: 8px; padding: 10px 12px; background: var(--surface-2); border-left: 3px solid var(--good); border-radius: var(--radius); font-size: 12.5px; line-height: 1.65; }
+.ref-answer p { margin: 0; }
+.ref-answer-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+
+textarea.wide { width: 100%; }
+.confidence-badge.High { color: var(--good); }
+.confidence-badge.Medium { color: var(--warn); }
+.confidence-badge.Low { color: var(--bad); }
+
+.locked-panel { text-align: center; padding: 40px 20px; color: var(--muted); }
+
+.checklist label { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; margin-bottom: 6px; }
+
+/* ---------- Portfolio case study (interview-ready document layout) ---------- */
+.case-study { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 24px; overflow: hidden; border-top: 5px solid var(--case-accent, var(--navy)); }
+.cs-header { padding: 32px 36px 22px; border-bottom: 1px solid var(--line); background: var(--surface-2); display: flex; gap: 18px; align-items: flex-start; }
+.cs-mark { flex: none; width: 48px; height: 48px; border-radius: 10px; background: var(--case-accent, var(--navy)); display: flex; align-items: center; justify-content: center; color: #fff; }
+.cs-mark svg { width: 26px; height: 26px; }
+.cs-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--case-accent, var(--muted)); font-weight: 700; }
+.cs-title { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--heading); margin: 8px 0 12px; text-wrap: balance; }
+.cs-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.cs-meta span:first-child { color: var(--case-accent, var(--muted)); font-weight: 600; }
+.cs-body { padding: 4px 36px 8px; }
+.cs-section { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.cs-section:last-child { border-bottom: none; }
+.cs-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--case-accent, var(--muted)); padding-top: 3px; font-weight: 700; }
+.cs-section h4 { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--heading); margin: 0 0 10px; }
+.cs-section p, .cs-section li { font-size: 13.5px; line-height: 1.7; max-width: 64ch; color: var(--ink); }
+.cs-section ul { margin: 0; padding-left: 18px; }
+.cs-section li { margin-bottom: 4px; }
+.cs-stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 2px; }
+.cs-stat { background: var(--surface-2); border-radius: var(--radius); padding: 10px 18px; min-width: 120px; border-bottom: 3px solid var(--case-accent, var(--navy-2)); }
+.cs-stat .n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 21px; font-weight: 600; color: var(--heading); }
+.cs-stat .l { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+.cs-qa { border-left: 2px solid var(--line); padding-left: 16px; margin-bottom: 18px; }
+.cs-qa:last-child { margin-bottom: 0; }
+.cs-qa .persona { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+.cs-qa .q { font-size: 13.5px; font-style: italic; color: var(--ink); margin: 2px 0 8px; max-width: 64ch; }
+.cs-qa .a { font-size: 13.5px; color: var(--ink); max-width: 64ch; line-height: 1.7; }
+.cs-recommend { background: var(--surface-2); border-left: 3px solid var(--case-accent, var(--navy-2)); border-radius: var(--radius); padding: 14px 18px; font-size: 14px; line-height: 1.7; max-width: 64ch; }
+.cs-disclosure { font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line); padding: 16px 36px; }
+.cs-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 36px; background: var(--surface-2); border-top: 1px solid var(--line); flex-wrap: wrap; gap: 8px; }
+.coach-card { background: linear-gradient(135deg, color-mix(in srgb, var(--case-accent, var(--navy)) 8%, var(--surface)), var(--surface)); border: 1px solid var(--case-accent, var(--line)); border-radius: var(--radius); padding: 16px 18px; margin-top: 4px; }
+.coach-score { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--case-accent, var(--navy)); }
+.coach-angle { border-left: 2px solid var(--case-accent, var(--navy-2)); padding-left: 12px; margin: 10px 0; }
+.coach-angle b { color: var(--heading); }
+.coach-loading { font-size: 13px; color: var(--muted); font-style: italic; }
+@media (max-width: 640px) {
+  .cs-header, .cs-body, .cs-disclosure, .cs-toggle-row { padding-left: 18px; padding-right: 18px; }
+  .cs-section { grid-template-columns: 1fr; }
+}
+
+/* ---------- Mobile touch targets ----------
+   桌面版按鈕刻意做得精緻小巧沒問題，但在手機上，小於44×44 CSS px的按鈕
+   容易點不準／點錯，這是W3C WCAG 2.5.5 Target Size規範建議的最低尺寸
+   （參考：https://www.w3.org/WAI/WCAG21/Understanding/target-size.html）。
+   只在手機寬度時放大常用互動按鈕，桌面版排版完全不受影響。 */
+@media (max-width: 900px) {
+  .btn, .btn.small,
+  .tabs button,
+  .coach-mode-tabs button,
+  .scenario-pill {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 14px;
+    padding-right: 14px;
+    font-size: 13.5px;
+  }
+  .checklist label { min-height: 44px; display: flex; align-items: center; gap: 8px; }
+  .checklist input[type=checkbox] { width: 20px; height: 20px; flex-shrink: 0; }
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>GTM 新品上市戰情室</h1>
-        <p class="subtitle">視覺規範：Indigo / Black / Light Grey | 支援 RWD 手機瀏覽</p>
-    </header>
-
-    <div class="dashboard-grid">
-        <div class="control-panel">
-            <label>數位廣告預算配比 (Digital Ads %)</label>
-            <input type="range" id="budgetRange" min="10" max="90" value="50" oninput="updateDashboard()">
-            <p id="budgetValue">目前配比: 50%</p>
-            <p style="font-size: 0.8em; color: #777; margin-top: 10px; text-align: center;">* 調整滑桿以模擬預算集中對 KPI 的影響</p>
-        </div>
-
-        <div class="result-panel">
-            <div class="kpi-box">
-                <div class="kpi-label">預估總銷售轉換 (KPI)</div>
-                <div class="kpi-value" id="kpiDisplay">1,250</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="milestone-table">
-            <thead>
-                <tr>
-                    <th>時程節點</th>
-                    <th>重點任務</th>
-                    <th>狀態</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>T-60 (設計期)</td>
-                    <td>符合 Indigo 規範之視覺素材產出</td>
-                    <td>進行中</td>
-                </tr>
-                <tr>
-                    <td>T-30 (預熱期)</td>
-                    <td class="high-cp">高 CP 值 KOL 合作啟動</td>
-                    <td>待執行</td>
-                </tr>
-                <tr>
-                    <td>T-Day (10/01)</td>
-                    <td>新品大貨正式抵達與上市</td>
-                    <td>鎖定</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="topbar">
+  <div class="brand">
+    <span class="en">Business Decision Lab</span>
+    <span class="zh">跨產業行銷P&amp;L決策分析</span>
+    <span class="sub">Turn Marketing Decisions into Commercial Outcomes</span>
+  </div>
+  <div class="tabs">
+    <button data-route="dashboard" onclick="App.navigate('dashboard')">Dashboard</button>
+    <button data-route="library" onclick="App.navigate('library')">Case Library</button>
+    <button data-route="workspace" onclick="App.navigate('workspace','phai-001')">Workspace</button>
+    <button data-route="progress" onclick="App.navigate('progress')">Progress</button>
+    <button data-route="portfolio" onclick="App.navigate('portfolio')">Portfolio</button>
+    <button data-route="data" onclick="App.navigate('data')">資料管理</button>
+  </div>
+  <div class="topbar-right">
+    <div class="save-indicator"><span class="save-dot"></span><span id="saveIndicator">尚未儲存任何紀錄</span></div>
+  </div>
 </div>
 
-<script>
-    function updateDashboard() {
-        const budgetRange = document.getElementById('budgetRange');
-        const budget = budgetRange.value;
-        document.getElementById('budgetValue').innerText = `目前配比: ${budget}%`;
-        
-        // 模擬一個簡單的線性 KPI 增長公式
-        const kpi = Math.round(budget * 25); 
-        document.getElementById('kpiDisplay').innerText = kpi.toLocaleString();
-    }
-    // 頁面載入時先執行一次初始化
-    updateDashboard();
-</script>
+<main>
+  <div id="appRoot"></div>
+  <p class="footer-note">
+    Business Decision Lab v1（MVP）— 資料儲存在本機瀏覽器（localStorage），請定期使用「資料管理」頁面匯出JSON備份。<br/>
+    本系統所有模擬案例僅參考公開市場常識與公開資料建立，非任何真實公司之機密資料，亦非Harvard Business Publishing原始案例之重製。
+  </p>
+</main>
 
+<script>
+/* =========================================================================
+ * Business Decision Lab — Fixed Financial Engine
+ * -------------------------------------------------------------------------
+ * 所有 P&L 計算都必須經過這裡的固定公式，Claude Coach／UI 不可自行發明算法。
+ * 每一條公式都在 FORMULA_GLOSSARY 中有「定義 / 計算方式 / 商業意義 / 常見錯誤 /
+ * 適用產業 / 是否可調整」的說明，供介面上的「公式小抄」使用。
+ * ========================================================================= */
+
+const Engine = (() => {
+
+  // ---- 基礎工具 -----------------------------------------------------------
+  const round = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+  const pct = (n) => (isFinite(n) ? n : 0);
+
+  /**
+   * 計算完整 P&L。
+   * inputs 欄位定義見 js/cases.js 內每個 case 的 financialInputs。
+   * 重要：以下項目彼此獨立，不可混算或重複扣除：
+   *   consumerDiscount / channelMargin / rebates / tradeMarketing /
+   *   paidMedia+KOL+creative+sponsorship+other(=A&P) / COGS / variable cost / fixed cost
+   */
+  function computePnL(inputs) {
+    const units = num(inputs.units);
+    const listPrice = num(inputs.listPrice);
+    const discountRate = pctToRatio(inputs.discountRate);
+    const returnRate = pctToRatio(inputs.returnRate);
+    const channelMarginRate = pctToRatio(inputs.channelMarginRate);
+    const rebateRate = pctToRatio(inputs.rebateRate);
+    const unitCOGS = num(inputs.unitCOGS);
+    const logisticsPerUnit = num(inputs.logisticsPerUnit);
+    const otherVariablePerUnit = num(inputs.otherVariablePerUnit);
+
+    const paidMedia = num(inputs.paidMedia);
+    const kolPR = num(inputs.kolPR);
+    const creativeProduction = num(inputs.creativeProduction);
+    const sponsorship = num(inputs.sponsorship);
+    const otherBrandInvestment = num(inputs.otherBrandInvestment);
+    const tradeMarketing = num(inputs.tradeMarketing);
+    const fixedLaunchInvestment = num(inputs.fixedLaunchInvestment);
+    const allocatedFixedCost = num(inputs.allocatedFixedCost);
+
+    const grossSales = units * listPrice;
+    const consumerDiscount = grossSales * discountRate;
+    const returns = grossSales * returnRate;
+    const netConsumerSales = grossSales - consumerDiscount - returns;
+    const channelMargin = netConsumerSales * channelMarginRate;
+    const rebates = netConsumerSales * rebateRate;
+    const companyNetRevenue = netConsumerSales - channelMargin - rebates;
+
+    const cogs = units * unitCOGS;
+    const grossProfit = companyNetRevenue - cogs;
+    const grossMarginPct = companyNetRevenue !== 0 ? grossProfit / companyNetRevenue : 0;
+
+    const totalAP = paidMedia + kolPR + creativeProduction + sponsorship + otherBrandInvestment;
+    const variableOperatingCost = units * (logisticsPerUnit + otherVariablePerUnit);
+
+    const contributionProfit = grossProfit - totalAP - tradeMarketing - variableOperatingCost;
+    const operatingProfit = contributionProfit - allocatedFixedCost;
+    const operatingMarginPct = companyNetRevenue !== 0 ? operatingProfit / companyNetRevenue : 0;
+
+    const unitNetRevenue = units !== 0 ? companyNetRevenue / units : 0;
+    const contributionPerUnit = unitNetRevenue - unitCOGS - (logisticsPerUnit + otherVariablePerUnit);
+    const breakEvenUnits = contributionPerUnit > 0 ? fixedLaunchInvestment / contributionPerUnit : Infinity;
+
+    const apPctOfRevenue = companyNetRevenue !== 0 ? totalAP / companyNetRevenue : 0;
+
+    // Marketing efficiency (獨立於核心 P&L，需另外輸入 attributedRevenue / incremental 假設)
+    const attributedRevenue = num(inputs.attributedRevenue);
+    const roas = paidMedia !== 0 ? attributedRevenue / paidMedia : 0;
+
+    const incrementalRevenue = num(inputs.incrementalRevenue);
+    const incrementalGrossMarginRate = pctToRatio(inputs.incrementalGrossMarginRate);
+    const incrementalGrossProfit = incrementalRevenue * incrementalGrossMarginRate;
+    const marketingInvestment = totalAP + tradeMarketing;
+    const romi = marketingInvestment !== 0 ? (incrementalGrossProfit - marketingInvestment) / marketingInvestment : 0;
+
+    return {
+      units, listPrice,
+      grossSales, consumerDiscount, returns, netConsumerSales,
+      channelMargin, rebates, companyNetRevenue,
+      cogs, grossProfit, grossMarginPct,
+      totalAP, tradeMarketing, variableOperatingCost,
+      contributionProfit, allocatedFixedCost, operatingProfit, operatingMarginPct,
+      unitNetRevenue, contributionPerUnit, fixedLaunchInvestment, breakEvenUnits,
+      apPctOfRevenue,
+      attributedRevenue, roas,
+      incrementalRevenue, incrementalGrossMarginRate, incrementalGrossProfit,
+      marketingInvestment, romi,
+    };
+  }
+
+  function num(v) { const n = parseFloat(v); return isFinite(n) ? n : 0; }
+  function pctToRatio(v) { return num(v) / 100; }
+
+  // ---- Sensitivity analysis ------------------------------------------------
+  const SENSITIVITY_KEYS = [
+    { key: 'units', label: '銷量 (Units)' },
+    { key: 'listPrice', label: '售價 (List Price)' },
+    { key: 'discountRate', label: '消費者折扣 (Discount Rate)' },
+    { key: 'channelMarginRate', label: '通路margin (Channel Margin)' },
+    { key: 'unitCOGS', label: '單位成本 (Unit COGS)' },
+    { key: 'paidMedia', label: 'Paid Media 投入' },
+    { key: 'allocatedFixedCost', label: '固定費用分攤 (Fixed Cost)' },
+  ];
+
+  function sensitivityAnalysis(inputs) {
+    const base = computePnL(inputs).operatingProfit;
+    const steps = [-0.10, -0.05, -0.01, 0.01, 0.05, 0.10];
+    const rows = SENSITIVITY_KEYS.map(({ key, label }) => {
+      const impacts = {};
+      steps.forEach((s) => {
+        const trial = { ...inputs, [key]: num(inputs[key]) * (1 + s) };
+        const op = computePnL(trial).operatingProfit;
+        impacts[s] = round(op - base);
+      });
+      const swing10 = Math.abs(impacts[0.10] - impacts[-0.10]);
+      return { key, label, impacts, swing10 };
+    });
+    rows.sort((a, b) => b.swing10 - a.swing10);
+    const maxSwing = rows.length ? rows[0].swing10 : 1;
+    return { base: round(base), rows, top3: rows.slice(0, 3), maxSwing: maxSwing || 1 };
+  }
+
+  // ---- Threshold / break-point solver (bisection) ---------------------------
+  // 找出「哪個變數跨過什麼門檻，Operating Profit 會歸零 → 原決策失效」
+  function solveThreshold(inputs, key, lo, hi, targetFn) {
+    const target = targetFn || ((pnl) => pnl.operatingProfit);
+    const f = (v) => target(computePnL({ ...inputs, [key]: v }));
+    let flo = f(lo), fhi = f(hi);
+    if (!isFinite(flo) || !isFinite(fhi)) return null;
+    if ((flo > 0 && fhi > 0) || (flo < 0 && fhi < 0)) return null; // 沒有跨界
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      const fmid = f(mid);
+      if (Math.abs(fmid) < 1) return round(mid);
+      if ((fmid > 0) === (flo > 0)) { lo = mid; flo = fmid; } else { hi = mid; }
+    }
+    return round((lo + hi) / 2);
+  }
+
+  // ---- 公式小抄 (glossary) --------------------------------------------------
+  const FORMULA_GLOSSARY = [
+    {
+      name: 'Gross Sales', zh: '總銷售額',
+      formula: 'Units × List Price',
+      definition: '以牌價計算、未扣除任何折扣或退貨的名目銷售額。',
+      meaning: '代表市場上「定價 × 銷量」的原始規模，是所有後續扣減的起點。',
+      mistake: '常被誤當成公司實際入帳營收——它還沒扣折扣、退貨、通路margin。',
+      industry: '所有產業通用',
+      adjustable: true,
+    },
+    {
+      name: 'Consumer Discount', zh: '消費者折扣',
+      formula: 'Gross Sales × Discount Rate',
+      definition: '直接讓利給終端消費者的價格折讓（例如上市優惠、雙11折扣）。',
+      meaning: '影響消費者實際支付價格，是price-volume trade-off的核心槓桿。',
+      mistake: '不要和通路margin或trade marketing混在一起算，三者受益對象不同。',
+      industry: '零售／電商產業尤其明顯',
+      adjustable: true,
+    },
+    {
+      name: 'Returns', zh: '退貨損失',
+      formula: 'Gross Sales × Return Rate',
+      definition: '因退貨而無法實現的銷售額。',
+      meaning: '高階家電、電商通路的退貨率會直接侵蝕淨銷售，常被新品上市規劃忽略。',
+      mistake: '只看毛退貨率，忘記退貨也會產生額外物流與整新成本（本引擎另計在Variable Cost）。',
+      industry: 'Home Appliance、E-commerce',
+      adjustable: true,
+    },
+    {
+      name: 'Net Consumer Sales', zh: '消費者淨銷售額',
+      formula: 'Gross Sales − Consumer Discount − Returns',
+      definition: '消費者實際支付、扣除折扣與退貨後的銷售額。',
+      meaning: '是通路margin與rebate計算的基礎。',
+      mistake: '—',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'Channel Margin', zh: '通路利潤（抽成）',
+      formula: 'Net Consumer Sales × Channel Margin Rate',
+      definition: '零售商／經銷商／平台從消費者淨銷售中抽取的margin。',
+      meaning: '通路要求的margin越高，公司實拿的淨營收越低——是本案例第三個決策的核心。',
+      mistake: '不可與distributor margin、listing fee重複計算；不同通路的margin結構要分開建模。',
+      industry: '所有有中間通路的產業（FMCG、家電、酒類尤其重要）',
+      adjustable: true,
+    },
+    {
+      name: 'Rebates', zh: '通路回饋金',
+      formula: 'Net Consumer Sales × Rebate Rate',
+      definition: '給通路的off-invoice財務回饋（例如年度達標獎勵），在請款發票之外另行支付，不反映在牌價或發票折扣上。',
+      meaning: '是通路關係的隱藏成本，容易被行銷團隊忽略，卻常由業務／財務另行議定。',
+      mistake: '不可與Channel Margin（發票內的通路抽成）或Consumer Discount重複計算——三者是不同性質的讓利。',
+      industry: '所有有中間通路的產業，FMCG／家電的年度合約尤其常見',
+      adjustable: true,
+    },
+    {
+      name: 'Company Net Revenue', zh: '公司淨營收',
+      formula: 'Net Consumer Sales − Channel Margin − Rebates',
+      definition: '公司實際入帳、可用來計算毛利與後續投資報酬的營收基礎。',
+      meaning: '幾乎所有獲利指標（Gross Margin、Operating Margin、ROMI）都以此為分母。',
+      mistake: '很多人誤用Gross Sales當分母計算margin%，會嚴重高估獲利率。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'COGS', zh: '銷貨成本',
+      formula: 'Units × Unit COGS',
+      definition: '產品本身的製造／進貨成本，不含物流與其他變動成本。',
+      meaning: '決定毛利率的下限，是pricing決策必須對照的硬成本。',
+      mistake: '不要把物流成本、關稅、倉儲費混入COGS——本引擎將它們獨立列在Variable Cost。',
+      industry: '所有產業通用；SaaS則對應Cost to Serve/Hosting',
+      adjustable: true,
+    },
+    {
+      name: 'Gross Profit / Gross Margin %', zh: '毛利 / 毛利率',
+      formula: 'Gross Profit = Company Net Revenue − COGS；Gross Margin % = Gross Profit ÷ Company Net Revenue',
+      definition: '扣除產品成本後的獲利與獲利率。',
+      meaning: '衡量「產品與定價」本身是否健康，尚未反映行銷投資效率。',
+      mistake: '毛利率高不代表最終賺錢——還要看A&P、trade marketing與fixed cost怎麼扣。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'Total A&P', zh: '品牌投資總額',
+      formula: 'Paid Media + KOL/PR + Creative Production + Sponsorship + Other Brand Investment',
+      definition: '用於建立品牌認知、需求創造的「上層」行銷投資。',
+      meaning: '是行銷主管最能主導的投資項目，也是本系統訓練的核心。',
+      mistake: '不要把trade marketing（給通路的促銷資源）算進A&P——兩者的商業目的不同，必須分開檢視ROI。',
+      industry: '所有產業通用，比重因產業而異（premium品類通常較高）',
+      adjustable: true,
+    },
+    {
+      name: 'Trade Marketing', zh: '通路端行銷資源',
+      formula: '（案例輸入值，通常為端架陳列、平台曝光、聯合促銷等費用總和）',
+      definition: '投資在通路端執行面的行銷資源，目的是換取陳列位置、平台曝光或聯合促銷，受益對象是通路而非直接建立品牌。',
+      meaning: '與Total A&P（品牌端投資）是兩種不同性質的行銷支出，必須分開檢視各自的ROI。',
+      mistake: '不要把它算進Total A&P一起看A&P%——會混淆「品牌投資」與「通路投資」兩種決策邏輯。',
+      industry: '所有有中間通路的產業，FMCG／零售通路尤其常見',
+      adjustable: true,
+    },
+    {
+      name: 'Variable Operating Cost', zh: '變動營運成本',
+      formula: 'Units × (Logistics per Unit + Other Variable Cost per Unit)',
+      definition: '隨銷量變動、但不屬於COGS的營運成本，例如物流配送、倉儲、保固維修準備金、金流手續費。',
+      meaning: '與COGS一起決定「每多賣一件的真實邊際成本」，是Contribution Profit與Contribution per Unit計算的一部分。',
+      mistake: '很多人只扣COGS就計算毛利／貢獻利潤，忘記這塊會讓獲利被高估。',
+      industry: '所有產業通用，電商與大型家電尤其重要',
+      adjustable: true,
+    },
+    {
+      name: 'Contribution Profit', zh: '貢獻利潤',
+      formula: 'Gross Profit − Total A&P − Trade Marketing − Variable Operating Cost',
+      definition: '扣除所有可歸屬的行銷投資與變動成本後的利潤，尚未分攤固定費用。',
+      meaning: '評估「這個產品線／這次投資」是否值得繼續的核心指標。',
+      mistake: '容易忘記扣Variable Operating Cost（物流、售後、金流），導致高估貢獻利潤。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'Allocated Fixed Cost', zh: '固定費用分攤',
+      formula: '（案例輸入值，通常為每期團隊人事、辦公室、系統等overhead分攤到此產品線的金額）',
+      definition: '不隨銷量變動、按期分攤到此產品線的經常性固定費用。',
+      meaning: '扣除這塊之後才是真正的Operating Profit——它是「這個生意長期是否養得起自己」的最後一道檢驗。',
+      mistake: '⚠️ 不要跟Fixed Launch Investment（break-even用的一次性上市投資）搞混，兩者定義不同、用途不同。',
+      industry: '所有產業通用',
+      adjustable: true,
+    },
+    {
+      name: 'Operating Profit / Operating Margin %', zh: '營業利潤 / 營業利潤率',
+      formula: 'Operating Profit = Contribution Profit − Allocated Fixed Cost；Operating Margin % = Operating Profit ÷ Company Net Revenue',
+      definition: '扣除分攤固定費用（人事、辦公室、系統等overhead）後的最終營業利潤。',
+      meaning: '是本系統所有商業決策最終要對齊的「北極星」指標。',
+      mistake: 'Revenue成長不代表Operating Profit成長——這正是本系統反覆訓練的判斷。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'Contribution per Unit', zh: '單位貢獻margin',
+      formula: 'Unit Net Revenue − Unit COGS − Unit Variable Cost',
+      definition: '每多賣一件產品，扣除COGS與變動成本後帶來的貢獻margin（尚未扣A&P/固定費用）。',
+      meaning: '用來計算break-even volume與評估「多賣量」是否划算。',
+      mistake: 'Unit Net Revenue是「平均」淨營收（已反映折扣/退貨/通路margin），不是List Price。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'Break-even Units', zh: '損益兩平銷量',
+      formula: 'Fixed Launch Investment ÷ Contribution per Unit',
+      definition: '需要賣出多少件，才能用「單位貢獻margin」回收一次性的上市投資（本案例＝Total A&P＋Trade Marketing）。',
+      meaning: '回答「這個上市計畫多久／多少量才不虧錢」。',
+      mistake: '⚠️ 定義易錯點：Fixed Launch Investment（一次性上市投資，用於break-even）與Allocated Fixed Cost（每期經常性overhead，用於Operating Profit）是兩個不同的數字，不可混用，否則會嚴重低估或高估break-even銷量。',
+      industry: '所有產業通用，SaaS常換算成payback period（月）',
+      adjustable: false,
+    },
+    {
+      name: 'A&P as % of Revenue', zh: 'A&P佔營收比',
+      formula: 'Total A&P ÷ Company Net Revenue',
+      definition: '品牌投資強度指標。',
+      meaning: '用來跟產業benchmark比較，判斷投資是否合理（premium品類通常較高）。',
+      mistake: '沒有「絕對正確」的比例，必須搭配ROMI與Operating Margin一起判斷。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'ROAS', zh: '廣告投資報酬率',
+      formula: 'Attributed Revenue ÷ Paid Media Spend',
+      definition: '衡量paid media帶來的「歸因營收」相對於花費的倍數。',
+      meaning: '常被誤用來代表獲利能力，但ROAS只算Revenue，沒有扣COGS與其他成本。',
+      mistake: '⚠️ ROAS高不代表Operating Profit高——Attributed Revenue通常是「總」歸因營收，不是incremental也不是profit，必須跟ROMI一起看。',
+      industry: '所有有付費媒體投放的產業，尤其E-commerce',
+      adjustable: true,
+    },
+    {
+      name: 'Incremental Gross Profit', zh: '增量毛利',
+      formula: 'Incremental Revenue × Incremental Gross Margin %',
+      definition: '因某項行銷投資「額外」創造出來的毛利（非投資也會發生的銷售不算）。',
+      meaning: '是評估A&P投資是否合理的關鍵——用incremental而非total數字。',
+      mistake: '很多人直接用total revenue乘以毛利率，高估了行銷貢獻（沒有扣除baseline銷量）。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+    {
+      name: 'ROMI', zh: '行銷投資報酬率',
+      formula: '(Incremental Gross Profit − Marketing Investment) ÷ Marketing Investment',
+      definition: '行銷投資扣除成本後的淨報酬率，以毛利（非營收）為基礎。',
+      meaning: '是本系統判斷「A&P投資是否合理」的核心指標，比ROAS更接近真實獲利。',
+      mistake: '分子必須是Incremental Gross Profit，不是Incremental Revenue，否則會嚴重高估報酬。',
+      industry: '所有產業通用',
+      adjustable: false,
+    },
+  ];
+
+  return {
+    computePnL, sensitivityAnalysis, solveThreshold, FORMULA_GLOSSARY, SENSITIVITY_KEYS,
+    round, num, pctToRatio,
+  };
+})();
+
+/* =========================================================================
+ * Business Decision Lab — Data Store
+ * -------------------------------------------------------------------------
+ * v1 儲存方式：瀏覽器 localStorage（隨裝置持久化，重新整理不會消失）＋
+ * JSON Export／Import（可手動存進 Google Drive / Google Space 等雲端硬碟）。
+ *
+ * 對應規格第十三節的資料夾結構，在 v1 以 localStorage 的 key 模擬：
+ *   /data/cases      → CASES（由 js/cases.js 提供，唯讀，不存在 localStorage）
+ *   /data/sessions   → store.sessions
+ *   /data/sources    → 各 case 內的 sources 陣列（唯讀）
+ *   /data/benchmarks → store.benchmarks
+ *   /models          → js/engine.js（財務引擎，程式碼本身，不是資料）
+ *   /portfolio       → store.portfolioNotes（使用者對 portfolio 呈現的客製化備註）
+ *
+ * 未來若要接 Google Sheets／Supabase／SQLite／GitHub，請實作與這裡相同的
+ * StoreAPI 介面（load / save / exportJSON / importJSON），並在 app.js 抽換
+ * DataStore 實例即可，不需改動其他模組。
+ * ========================================================================= */
+
+const DataStore = (() => {
+  const STORE_KEY = 'bdl_store_v1';
+  const STORE_VERSION = '1.0.0';
+
+  function defaultStore() {
+    return {
+      version: STORE_VERSION,
+      lastSaved: null,
+      sessions: [],       // 每次練習的完整紀錄（不覆蓋，只新增）
+      assumptionLogs: {},  // { [caseId]: [ {text, confidence, ts} ] }
+      workspaceDrafts: {}, // { [caseId]: { inputs, scenario, notes } } 暫存中的操作，避免中途消失
+      portfolioNotes: {},  // { [sessionId]: { published: bool, editedSummary } }
+      benchmarks: {},       // 保留給未來的產業 benchmark 資料
+    };
+  }
+
+  let state = load();
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return defaultStore();
+      const parsed = JSON.parse(raw);
+      return { ...defaultStore(), ...parsed };
+    } catch (e) {
+      console.error('[DataStore] load failed, falling back to default store', e);
+      return defaultStore();
+    }
+  }
+
+  function persist() {
+    state.lastSaved = new Date().toISOString();
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('[DataStore] save failed (localStorage可能已滿或被封鎖)', e);
+      alert('資料儲存失敗：瀏覽器localStorage無法寫入。請使用JSON Export手動備份。');
+    }
+    return state;
+  }
+
+  function get() { return state; }
+
+  function addSession(session) {
+    state.sessions.push(session);
+    persist();
+    return session;
+  }
+
+  function updateSession(sessionId, patch) {
+    const idx = state.sessions.findIndex((s) => s.sessionId === sessionId);
+    if (idx === -1) return null;
+    state.sessions[idx] = { ...state.sessions[idx], ...patch };
+    persist();
+    return state.sessions[idx];
+  }
+
+  function getSessionsByCase(caseId) {
+    return state.sessions.filter((s) => s.caseId === caseId);
+  }
+
+  function saveDraft(caseId, draft) {
+    state.workspaceDrafts[caseId] = draft;
+    persist();
+  }
+
+  function getDraft(caseId) {
+    return state.workspaceDrafts[caseId] || null;
+  }
+
+  function addAssumptionLog(caseId, entry) {
+    if (!state.assumptionLogs[caseId]) state.assumptionLogs[caseId] = [];
+    state.assumptionLogs[caseId].push(entry);
+    persist();
+  }
+
+  function getAssumptionLog(caseId) {
+    return state.assumptionLogs[caseId] || [];
+  }
+
+  function setPortfolioPublished(sessionId, published, editedSummary) {
+    state.portfolioNotes[sessionId] = { published, editedSummary: editedSummary || '' };
+    persist();
+  }
+
+  function exportJSON() {
+    const payload = { ...state, exportedAt: new Date().toISOString(), exportVersion: STORE_VERSION };
+    return JSON.stringify(payload, null, 2);
+  }
+
+  function importJSON(jsonText) {
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (e) {
+      throw new Error('JSON格式錯誤，無法匯入：' + e.message);
+    }
+    if (!parsed || typeof parsed !== 'object') throw new Error('檔案內容不是有效的物件');
+    state = { ...defaultStore(), ...parsed, version: STORE_VERSION };
+    persist();
+    return state;
+  }
+
+  function reset() {
+    state = defaultStore();
+    persist();
+    return state;
+  }
+
+  // 通用檔案下載（JSON匯出／Portfolio靜態網頁匯出共用）。
+  // 相容兩種環境：
+  //   1) Claude Artifact（沙箱iframe無法直接觸發瀏覽器下載，改用平台的
+  //      downloads能力，需在Artifact發布設定中宣告 capabilities:{downloads:true}）
+  //   2) 一般瀏覽器 / Google Apps Script 網頁 / GitHub Pages 等靜態網站：
+  //      走標準 Blob URL 下載流程。
+  async function downloadFile(filename, mimeType, data) {
+    if (window.claude && typeof window.claude.use === 'function') {
+      try {
+        const downloads = await window.claude.use('downloads');
+        if (downloads) {
+          try {
+            await downloads.save({ filename, data });
+          } catch (e) {
+            if (!e || e.code !== 'declined') {
+              alert('匯出失敗：' + (e && e.message ? e.message : '未知錯誤'));
+            }
+          }
+          return;
+        }
+      } catch (e) {
+        // fall through to the plain-browser method below
+      }
+    }
+
+    const blob = new Blob([data], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  async function downloadExport() {
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    const filename = `business-decision-lab_backup_${stamp}.json`;
+    await downloadFile(filename, 'application/json', exportJSON());
+  }
+
+  return {
+    STORE_VERSION,
+    get, persist,
+    addSession, updateSession, getSessionsByCase,
+    saveDraft, getDraft,
+    addAssumptionLog, getAssumptionLog,
+    setPortfolioPublished,
+    exportJSON, importJSON, reset, downloadExport, downloadFile,
+  };
+})();
+
+/* =========================================================================
+ * Business Decision Lab — Case Data
+ * -------------------------------------------------------------------------
+ * 資料來源標示規則（每個重要數字都要有一個 tag）：
+ *   'public'     Publicly sourced  — 附 source id（見 case.sources）
+ *   'case'       Case-provided     — 由使用者於本指令中直接給定
+ *   'user'       User input        — 練習過程中使用者自己輸入／覆蓋的數字
+ *   'assumption' Claude assumption — Claude基於產業常識建立的假設，非真實引用
+ *
+ * ⚠️ 誠實揭露：本案例為「Cirrus Robotics」之虛構品牌，非任何真實公司之
+ * 機密資料。凡標示 assumption 的數字，皆為求案例可操作而設定的合理估計，
+ * 使用時應視為練習素材，不可作為真實商業決策依據。
+ * ========================================================================= */
+
+const INDUSTRIES = [
+  { id: 'premium-home-appliance', label: 'Premium Home Appliance', labelZh: '高階家電',
+    topics: ['Premium pricing', 'Retail margin', 'E-commerce discount', 'Warranty cost', 'Return rate', 'Logistics', 'Product launch A&P', 'KOL與paid media配置', 'Break-even volume'] },
+  { id: 'alcohol-spirits', label: 'Alcohol / Spirits', labelZh: '酒類／烈酒',
+    topics: ['Distributor margin', 'Retail與on-trade economics', 'Excise tax', 'Brand-building investment', 'Sponsorship', 'Sampling', 'Premiumization', 'Volume versus price mix'] },
+  { id: 'vision-care', label: 'Vision Care / Medical Consumer', labelZh: '視光／醫療消費品',
+    topics: ['B2B2C', 'Distributor與optical shop margin', 'Professional recommendation', 'Trial conversion', 'Repeat purchase', 'Consumer education', 'Portfolio mix', 'Regulatory constraints'] },
+  { id: 'fmcg', label: 'FMCG', labelZh: '快消品',
+    topics: ['Listing fee', 'Trade promotion', 'Consumer promotion', 'Retail margin', 'Promotional volume', 'Cannibalization', 'Distribution expansion', 'Gross-to-net'] },
+  { id: 'ecommerce-marketplace', label: 'E-commerce / Marketplace', labelZh: '電商／平台',
+    topics: ['Take rate', 'Platform subsidy', 'Fulfillment cost', 'Customer acquisition', 'Repeat purchase', 'Free shipping', 'Seller incentives', 'Contribution margin'] },
+  { id: 'saas-subscription', label: 'SaaS Subscription', labelZh: 'SaaS訂閱',
+    topics: ['MRR', 'ARR', 'CAC', 'LTV', 'Churn', 'Gross margin', 'Payback period', 'Free trial conversion', 'Sales and marketing efficiency'] },
+];
+
+const CASES = [];
+
+/* -------------------------------------------------------------------------
+ * 品牌識別系統：每個產業一組專屬配色＋原創幾何標記（非真實商標，純設計
+ * 元素），讓Portfolio的每個案例卡片看起來像獨立專案，而不是一份報告。
+ * ---------------------------------------------------------------------- */
+const INDUSTRY_THEME = {
+  'premium-home-appliance': { accent: '#2f5d8a', mark: 'ring' },
+  'alcohol-spirits': { accent: '#9a5a1f', mark: 'diamond' },
+  'vision-care': { accent: '#127a72', mark: 'lens' },
+  'fmcg': { accent: '#c04432', mark: 'burst' },
+  'ecommerce-marketplace': { accent: '#6a3fb5', mark: 'cart' },
+  'saas-subscription': { accent: '#1f8a5f', mark: 'layers' },
+};
+function getIndustryTheme(industryId) {
+  return INDUSTRY_THEME[industryId] || { accent: '#10233f', mark: 'ring' };
+}
+const MARK_PATHS = {
+  ring: '<circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2.4"/>',
+  diamond: '<rect x="5.5" y="5.5" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2.2" transform="rotate(45 12 12)"/>',
+  lens: '<circle cx="9.5" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="15.5" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/>',
+  burst: '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M5.6 5.6l3.5 3.5M14.9 14.9l3.5 3.5M18.4 5.6l-3.5 3.5M9.1 14.9l-3.5 3.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+  cart: '<path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.6a2 2 0 0 0 2-1.6L20 8H7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/>',
+  layers: '<path d="M12 4l8 4.5-8 4.5-8-4.5L12 4z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><path d="M4 13.5L12 18l8-4.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/>',
+};
+function renderMark(industryId) {
+  const theme = getIndustryTheme(industryId);
+  return `<svg viewBox="0 0 24 24" fill="none">${MARK_PATHS[theme.mark] || MARK_PATHS.ring}</svg>`;
+}
+
+/* -------------------------------------------------------------------------
+ * CASE 1（完整）：高階掃拖機器人台灣上市決策 — Premium Home Appliance
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'phai-001',
+  title: '高階掃拖機器人台灣上市決策',
+  titleEn: 'Cirrus X1 Pro — Taiwan Launch Decision',
+  industry: 'premium-home-appliance',
+  difficulty: 'Advanced',
+  mainSkill: 'Pricing & Break-even Analysis',
+  secondarySkills: ['Channel Economics', 'A&P Allocation', 'Sensitivity Analysis', 'Executive Recommendation'],
+  version: 'v1.0',
+  createdDate: '2026-08-18',
+  updatedDate: '2026-08-18',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+
+  background: {
+    companyProfile: 'Cirrus Robotics 是一家虛構的中型家電新創品牌，總部設於新加坡，主力產品為高階掃地機器人與清潔小家電，目前於東南亞三個市場銷售，尚未進入台灣。',
+    productService: 'Cirrus X1 Pro：掃拖合一機器人，具備雷射導航、自動集塵、熱風烘乾拖布等旗艦功能，定位對標市場上的高階掃拖機種。',
+    marketSituation: '台灣掃地機器人市場已有多個國際與中國品牌競爭，消費者對「掃拖合一＋自動清潔基站」的高階機種接受度逐年提升，電商平台（雙11、618）與3C實體通路是主要銷售場域。',
+    customer: '雙薪家庭、有寵物或長輩同住的家庭、重視居家清潔效率與科技感的25–45歲消費者，願意為「省時間」與「免手洗拖布」等痛點付費。',
+    competitors: '市場上已有多個國際品牌（含歐美與中系品牌）在NT$20,000–NT$35,000價格帶競爭，功能與行銷投入都相當積極。',
+    channelStructure: '規劃通路組合：官網／電商旗艦店（蝦皮、momo、PChome）＋3C連鎖零售（如燦坤、全國電子型態通路）＋少量家電專賣店。各通路要求的margin不同，電商平台另有平台抽成與行銷資源要求。',
+    strategicChallenge: 'Cirrus Robotics 需要在12週內決定是否、以及如何進入台灣市場。品牌尚無台灣知名度，必須同時控制上市風險與建立長期市佔基礎，而不是單純追求短期銷量。',
+  },
+
+  managementDecision: '公司是否應在台灣上市 Cirrus X1 Pro？若上市，應以什麼定價與投資組合進行，才能在合理時間內達成損益兩平並建立永續獲利的商業模式？',
+  decisionSubQuestions: [
+    '是否應以 NT$29,900 上市？',
+    '是否應在上市期提供 8% 折扣？',
+    '通路 margin 為 28% 時是否仍可獲利？',
+    '首波 A&P 應投入多少？',
+    '需要達到多少銷量才能 break-even？',
+    '如果通路要求再增加 5 個百分點 margin，應漲價、減少 A&P，還是放棄部分通路？',
+  ],
+
+  // 固定欄位鍵值需與 js/engine.js computePnL() 的 inputs 對應一致
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '建議售價 List Price', unit: 'NT$/台', group: '定價與銷量', tag: 'case', note: '公司內部提出的上市定價方案。', editable: true, default: 29900 },
+      { key: 'units', label: '首年目標銷量 Units', unit: '台', group: '定價與銷量', tag: 'assumption', note: '參考台灣高階掃拖機種的合理新品牌切入規模所建立的假設，非真實市調數字，使用前應以實際通路铺货與媒體排期驗證。', editable: true, default: 6000 },
+      { key: 'discountRate', label: '消費者折扣 Discount Rate', unit: '%', group: '定價與銷量', tag: 'case', note: '上市期促銷折扣方案。', editable: true, default: 8 },
+      { key: 'returnRate', label: '退貨率 Return Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '參考高單價家電／電商通路一般退貨率區間所設的假設（實際應向通路與客服部門索取歷史數據）。', editable: true, default: 3 },
+
+      { key: 'channelMarginRate', label: '通路 Margin Rate', unit: '%', group: '通路經濟', tag: 'case', note: '電商＋3C零售的加權平均通路margin方案。', editable: true, default: 28 },
+      { key: 'rebateRate', label: 'Rebate Rate（通路年度回饋）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: '假設給主要零售夥伴的年度達標回饋，需向業務與財務確認實際合約條件。', editable: true, default: 2 },
+
+      { key: 'unitCOGS', label: '單位製造成本 Unit COGS', unit: 'NT$/台', group: '成本結構', tag: 'assumption', note: '假設COGS約為List Price的三成左右，屬合理高階家電成本結構估計，需向供應鏈確認實際報價。', editable: true, default: 9500 },
+      { key: 'logisticsPerUnit', label: '物流／倉儲成本', unit: 'NT$/台', group: '成本結構', tag: 'assumption', note: '大型家電最後一哩配送、倉儲與退貨整新的估計成本。', editable: true, default: 450 },
+      { key: 'otherVariablePerUnit', label: '其他變動成本（保固／客服／金流）', unit: 'NT$/台', group: '成本結構', tag: 'assumption', note: '涵蓋保固維修準備金、客服成本與金流手續費的估計。', editable: true, default: 300 },
+
+      { key: 'paidMedia', label: 'Paid Media', unit: 'NT$（上市季）', group: 'A&P投資', tag: 'assumption', note: '數位廣告（社群、搜尋、電商站內廣告）上市季預算假設。', editable: true, default: 3000000 },
+      { key: 'kolPR', label: 'KOL／PR', unit: 'NT$（上市季）', group: 'A&P投資', tag: 'assumption', note: '參考業界常見的多層級KOL合作規模（旗艦＋腰部＋micro）所設的預算假設。', editable: true, default: 1800000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（上市季）', group: 'A&P投資', tag: 'assumption', note: '產品攝影、影片、關鍵視覺與素材製作預算假設。', editable: true, default: 600000 },
+      { key: 'sponsorship', label: 'Sponsorship', unit: 'NT$（上市季）', group: 'A&P投資', tag: 'assumption', note: '家庭／居家生活相關活動或媒體合作贊助預算假設。', editable: true, default: 400000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（上市季）', group: 'A&P投資', tag: 'assumption', note: '公關活動、快閃體驗、媒體公關等其他品牌投資假設。', editable: true, default: 300000 },
+
+      { key: 'tradeMarketing', label: 'Trade Marketing（通路端促銷資源）', unit: 'NT$（上市季）', group: '通路投資', tag: 'assumption', note: '端架陳列、平台首頁曝光、聯合促銷等給通路的資源假設，與A&P（品牌端）分開計算。', editable: true, default: 1200000 },
+
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性上市投資，用於break-even）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：此為break-even計算專用的「一次性」上市投資總額，預設＝Total A&P＋Trade Marketing（7,300,000），可依實際上市計畫調整，不等於下方的Allocated Fixed Cost。', editable: true, default: 7300000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '團隊人事、辦公室、系統等經常性費用分攤至此產品線的估計，用於Operating Profit計算，與上列一次性投資不同。', editable: true, default: 800000 },
+
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約35%的Gross Sales，用於計算ROAS；非真實MMM/歸因模型結果。', editable: true, default: 62790000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue（行銷帶來的增量營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設扣除自然銷售基期後，行銷投資帶來的增量營收約為Gross Sales的15%，用於ROMI計算。', editable: true, default: 26910000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設增量銷售的毛利率與整體毛利率相近。', editable: true, default: 45 },
+    ],
+  },
+
+  missingInformation: [
+    { item: '通路實際簽約margin與各平台個別條件（非加權平均）', why: '目前用單一加權平均28%簡化多通路差異，可能掩蓋單一通路虧損。', confidence: 'Low' },
+    { item: '競品實際上市促銷節奏與投入規模', why: '會直接影響Cirrus X1 Pro的share of voice與所需A&P規模。', confidence: 'Low' },
+    { item: '實際保固與退貨歷史數據（同集團其他市場）', why: '目前returnRate與otherVariablePerUnit為假設值，需以實際數據校正。', confidence: 'Medium' },
+    { item: 'HQ對台灣市場的資源上限與是否有集團採購成本優勢', why: '會影響unitCOGS與可動用的A&P總額。', confidence: 'Low' },
+    { item: '消費者對此價格帶的實際支付意願（WTP）研究', why: '目前定價假設未經在地定量調查驗證。', confidence: 'Medium' },
+  ],
+
+  decisionQuestions: [
+    '核心商業問題是什麼？',
+    '哪三個假設最影響結果？',
+    '建議採取什麼行動？',
+    '如果最關鍵變數惡化，決策是否改變？',
+    '如何用三句話向GM或CFO提出建議？',
+  ],
+  // 參考答案：以Base情境數字為示範計算，非唯一標準答案。建議先寫下自己的答案，再點開比較差異。
+  referenceAnswers: [
+    '這不是單純的「要不要用NT$29,900上市」的定價題，而是：在品牌於台灣完全沒有知名度、通路要求至少28%margin、且退貨與物流成本都不確定的情況下，能不能用一個「定價＋折扣＋A&P」的組合，同時做到（a）建立長期市佔基礎、（b）不淪為用毛利換銷量的短視操作。核心張力在於：把價格壓低或折扣加深可以更快衝量，但會侵蝕本來就不厚的毛利（Base情境Gross Margin約49.0%）與Operating Margin（Base情境約37.7%）；把價格與毛利守住，則要靠更精準的A&P與通路談判去補銷量，時間風險更高。',
+    '1) 首年目標銷量6,000台——這是Claude assumption，沒有實地市調驗證，一旦高估，break-even以外的所有獲利結論都會落空。2) 通路margin是否能長期維持在28%——這是通路關係的核心變數，本案例第六個決策已經預告通路可能要求再加5個百分點，敏感度分析顯示這是影響Operating Profit最大的變數之一。3) 退貨率3%與物流成本假設——大型家電的退貨處理成本經常被低估，一旦上升到6%，會同時侵蝕Net Consumer Sales與Variable Operating Cost兩處，是雙重打擊。',
+    '在Base情境的假設下，建議上市，但不要把8%折扣當成常態——把它當成上市期的「流量觸發器」，同時把A&P配置向KOL／PR與paid media傾斜（而非單純加深折扣）。Contribution per Unit（約NT$8,378／台）在28%通路margin下仍為正，Break-even只需約871台，遠低於6,000台目標，代表下行風險可控；但必須同步啟動退貨率與通路實際簽約條件的驗證，因為這兩個假設一旦錯誤，會直接吃掉37.7%的Operating Margin緩衝。',
+    '如果通路margin從28%被迫調整到33%（Conservative情境），Operating Profit會明顯壓縮；這時決策應該改變——不是硬撐原定價，而是三選一：(a) 溫和調漲List Price、(b) 下修A&P但保留KOL/PR這類轉換效率較高的項目、(c) 針對margin要求最高的單一通路，考慮縮小合作規模、把資源集中在margin較合理的通路。單純「降價衝量」或「無限加深折扣」都不是好選項，因為那會同時吃掉毛利與Operating Profit兩層緩衝。',
+    '第一句（問題）：Cirrus X1 Pro在台灣的上市決策，核心風險不是定價本身，而是通路margin與實際銷量兩個尚未驗證的假設。第二句（建議）：在通路margin維持28%的前提下，建議以NT$29,900、8%上市折扣執行，Break-even僅約871台，相對6,000台目標有安全邊際，可以上市。第三句（但書）：但若通路margin被迫上修至33%或退貨率超過6%，需要重新檢視定價與A&P配置，而非直接吸收在Operating Profit上——建議一個月內完成通路合約與退貨數據驗證，作為正式拍板前的checkpoint。',
+  ],
+
+  scenarios: {
+    conservative: {
+      label: 'Conservative', labelZh: '保守情境',
+      desc: '通路要求更高margin、消費者需要更深折扣才願意買單，銷量成長較慢。',
+      overrides: { units: 4000, discountRate: 12, channelMarginRate: 33, paidMedia: 2400000, kolPR: 1440000 },
+    },
+    base: {
+      label: 'Base', labelZh: '基準情境',
+      desc: '依目前上市計畫的假設執行。',
+      overrides: {},
+    },
+    aggressive: {
+      label: 'Aggressive', labelZh: '積極情境',
+      desc: '加碼A&P搶市佔，通路關係穩定在28%，銷量顯著提升。',
+      overrides: { units: 9000, discountRate: 5, paidMedia: 3900000, kolPR: 2340000, tradeMarketing: 1560000 },
+    },
+  },
+
+  sources: [
+    {
+      title: '（本案例未使用付費HBP案例全文）',
+      publisher: 'Business Decision Lab（Claude assumption）',
+      url: '',
+      pubDate: '',
+      accessDate: '2026-08-18',
+      dataPoint: '案例架構參考一般GTM launch與premium home appliance定價／通路訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。',
+      tag: 'assumption',
+    },
+  ],
+});
+
+// 每個case的Decision Questions固定用同一組五題（規格第八節F區塊的通用模板）
+const STANDARD_DECISION_QUESTIONS = [
+  '核心商業問題是什麼？',
+  '哪三個假設最影響結果？',
+  '建議採取什麼行動？',
+  '如果最關鍵變數惡化，決策是否改變？',
+  '如何用三句話向GM或CFO提出建議？',
+];
+
+/* -------------------------------------------------------------------------
+ * CASE 2：高階威士忌台灣通路擴張決策 — Alcohol / Spirits
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'alcohol-001',
+  title: '高階威士忌台灣通路擴張決策',
+  titleEn: 'Glenmere Single Malt — On-Trade Expansion Decision',
+  industry: 'alcohol-spirits',
+  difficulty: 'Advanced',
+  mainSkill: 'Channel Economics & Premiumization',
+  secondarySkills: ['Excise Tax Treatment', 'Sponsorship ROI', 'Volume vs. Price Mix'],
+  version: 'v1.0',
+  createdDate: '2026-08-19',
+  updatedDate: '2026-08-19',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+  background: {
+    companyProfile: 'Glenmere Distillery 是一家虛構的蘇格蘭風格單一麥芽威士忌品牌，由台灣總代理獨家進口，目前以off-trade（量販、超市、電商）為主要銷售通路，尚未系統性經營on-trade（餐廳、酒吧）通路。',
+    productService: 'Glenmere 12 Year：700ml單一麥芽威士忌，定位中高階威士忌品飲市場。',
+    marketSituation: '台灣威士忌市場近年品飲文化興起，餐酒搭配與威士忌吧數量成長，消費者對「故事性」與「稀缺性」的premium品牌有較高的付費意願，但on-trade通路的鋪貨與教育成本遠高於off-trade。',
+    customer: '35–55歲、有品飲習慣、願意在餐廳／酒吧點單杯威士忌或收藏整瓶的中高收入消費者。',
+    competitors: '市場上已有多個國際威士忌品牌長期經營on-trade關係，部分品牌有專屬品牌大使（brand ambassador）進駐重點酒吧。',
+    channelStructure: '現有：量販／超市／電商（off-trade）＋少量餐飲通路。規劃擴張：簽約重點城市of 50–80家餐廳／酒吧（on-trade），並搭配品飲活動與侍酒師培訓。',
+    strategicChallenge: 'On-trade通路能建立品牌形象與長期溢價能力，但margin結構更複雜（含菸酒稅、on-trade通路的高margin要求、以及品飲贊助的沉沒成本），短期投資報酬不如off-trade直接。',
+  },
+  managementDecision: '品牌是否應該將明年度的成長重心從off-trade轉向on-trade通路，並加碼品飲贊助與KOL試飲，以建立更高的品牌溢價與長期定價權？',
+  decisionSubQuestions: [
+    '是否應以NT$2,480的單瓶建議售價維持現有定位？',
+    '是否應在通路開瓶活動期提供10%折扣？',
+    '通路（含on-trade）加權margin達35%時，是否仍可獲利？',
+    '品飲贊助與試飲（sampling）預算應投入多少才合理？',
+    '需要達到多少銷量才能break-even？',
+    '如果主力on-trade通路要求margin再提高5個百分點，應該調漲價格、縮減贊助預算，還是把資源集中在margin較低的off-trade通路？',
+  ],
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '建議售價 List Price（每瓶700ml）', unit: 'NT$/瓶', group: '定價與銷量', tag: 'assumption', note: '對標市場中高階單一麥芽威士忌的定價帶所設之假設。', editable: true, default: 2480 },
+      { key: 'units', label: '首年目標銷量 Units', unit: '瓶', group: '定價與銷量', tag: 'assumption', note: 'off-trade現有基礎加上on-trade新增鋪貨的合理估計，非真實市調數字。', editable: true, default: 15000 },
+      { key: 'discountRate', label: '開瓶活動折扣 Discount Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '新通路開瓶期的消費者／通路促銷折扣假設。', editable: true, default: 10 },
+      { key: 'returnRate', label: '報廢／退貨率 Return Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '酒類退貨率通常低，但需考慮破損與長期庫存報廢。', editable: true, default: 1 },
+      { key: 'channelMarginRate', label: '通路 Margin Rate（off-trade＋on-trade加權）', unit: '%', group: '通路經濟', tag: 'assumption', note: 'on-trade通路（餐廳／酒吧）要求的margin通常高於off-trade，此為加權平均假設。', editable: true, default: 35 },
+      { key: 'rebateRate', label: 'Rebate Rate（通路年度回饋）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: '假設給重點通路的年度達標回饋。', editable: true, default: 3 },
+      { key: 'unitCOGS', label: '單瓶進口成本 Unit COGS（含關稅）', unit: 'NT$/瓶', group: '成本結構', tag: 'assumption', note: '含國外採購成本與進口關稅，不含菸酒稅（菸酒稅另計於Other Variable Cost）。', editable: true, default: 650 },
+      { key: 'logisticsPerUnit', label: '倉儲物流成本', unit: 'NT$/瓶', group: '成本結構', tag: 'assumption', note: '酒類需符合特定倉儲條件，成本略高於一般消費品。', editable: true, default: 40 },
+      { key: 'otherVariablePerUnit', label: '菸酒稅＋推廣費（Other Variable Cost）', unit: 'NT$/瓶', group: '成本結構', tag: 'assumption', note: '⚠️ 產業特殊性：台灣菸酒稅按量課徵、隨每瓶銷售同步發生，屬於變動成本而非固定費用，因此計入Variable Cost而非COGS，此為酒類產業特有的accounting treatment，與家電／FMCG不同。', editable: true, default: 185 },
+      { key: 'paidMedia', label: 'Paid Media', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '數位廣告與品牌內容投放假設。', editable: true, default: 800000 },
+      { key: 'kolPR', label: 'KOL／PR（侍酒師與品飲意見領袖）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '威士忌品飲圈意見領袖合作預算假設。', editable: true, default: 600000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '品牌形象素材製作預算假設。', editable: true, default: 300000 },
+      { key: 'sponsorship', label: 'Sponsorship（品飲活動／餐酒會）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '酒類品牌常見的體驗式行銷投資假設。', editable: true, default: 700000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '公關與其他品牌活動預算假設。', editable: true, default: 200000 },
+      { key: 'tradeMarketing', label: 'Trade Marketing（on-trade試飲／POSM）', unit: 'NT$（年度）', group: '通路投資', tag: 'assumption', note: '給on-trade通路的試飲活動、店頭陳列與侍酒師培訓資源，與品牌端A&P分開計算——這正是本案例核心決策的投資項目。', editable: true, default: 900000 },
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性on-trade擴張投資）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：break-even計算專用的一次性投資，預設＝Total A&P＋Trade Marketing（3,500,000）。', editable: true, default: 3500000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '團隊與代理商營運費用分攤估計。', editable: true, default: 500000 },
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約30%的Gross Sales。', editable: true, default: 11160000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設行銷投資帶來的增量營收約為Gross Sales的15%。', editable: true, default: 5580000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設增量銷售的毛利率與整體毛利率相近。', editable: true, default: 45 },
+    ],
+  },
+  missingInformation: [
+    { item: '實際on-trade通路（酒吧／餐廳）的簽約margin與帳期條件', why: '目前用單一加權平均35%簡化off-trade與on-trade的差異，可能低估on-trade的真實成本。', confidence: 'Low' },
+    { item: '菸酒稅未來調整與進口關稅稅率變動風險', why: '菸酒稅是每瓶課徵的變動成本，稅率調整會直接影響Contribution per Unit。', confidence: 'Low' },
+    { item: '競品在同價格帶的贊助與KOL投入規模', why: '會直接影響本案sponsorship與KOL預算是否具競爭力。', confidence: 'Low' },
+    { item: '消費者在此價格帶的品牌忠誠度與轉換意願市場研究', why: '目前定價與銷量假設未經在地定量調查驗證。', confidence: 'Medium' },
+    { item: '集團在其他市場的on-trade擴張經驗數據', why: '可作為此次台灣擴張投資報酬率的參考benchmark。', confidence: 'Medium' },
+  ],
+  decisionQuestions: STANDARD_DECISION_QUESTIONS,
+  referenceAnswers: [
+    '核心商業問題不是「要不要賣威士忌」，而是「要不要把成長引擎從穩定但天花板較低的off-trade，換成投資更重、但能建立長期定價權的on-trade」。這個決策的張力在於：on-trade的品飲贊助與試飲屬於沉沒成本（NT$900,000的Trade Marketing一旦投入不會回收），而off-trade擴張的邊際投資遠低於此。',
+    '1) 首年15,000瓶的銷量假設，其中on-trade貢獻多少沒有市調驗證。2) 通路加權margin35%是否真實反映on-trade的較高要求——如果on-trade實際要求45%以上，加權平均會被嚴重低估。3) 菸酒稅與關稅是否穩定——這是變動成本裡唯一政策風險較高的一項。',
+    '在Base情境下建議執行on-trade擴張：Break-even約7,093瓶，相對15,000瓶目標仍有約53%的安全邊際，Operating Margin約16.6%，代表即使on-trade投資有一定沉沒成本，整體結構仍然健康；但建議先以年度合約而非一次性贊助的方式簽訂重點酒吧，保留調整彈性。',
+    '如果on-trade通路margin被迫上修到40%以上（本案例第六個決策的情境），不應該無限加碼贊助去換取更多曝光——應該優先考慮溫和調漲售價（威士忌消費者對高單價品項的價格敏感度通常低於平價消費品），同時把試飲資源集中在轉換率最高的少數指標酒吧，而不是平均分散。',
+    '第一句（問題）：Glenmere在on-trade的擴張，核心風險是通路margin被低估、以及品飲贊助屬於沉沒成本。第二句（建議）：在Base假設下，Break-even僅需約7,093瓶，相對15,000瓶目標有安全邊際，建議執行，但採年約而非一次性贊助。第三句（但書）：若實際on-trade margin超過40%，建議優先調價而非砍贊助，因為砍贊助會直接損及尚未建立的品牌關係。',
+  ],
+  scenarios: {
+    conservative: { label: 'Conservative', labelZh: '保守情境', desc: 'on-trade通路要求更高margin，開瓶折扣需要更深，A&P與贊助投入縮減。',
+      overrides: { units: 10000, discountRate: 15, channelMarginRate: 40, paidMedia: 640000, kolPR: 480000 } },
+    base: { label: 'Base', labelZh: '基準情境', desc: '依目前擴張計畫的假設執行。', overrides: {} },
+    aggressive: { label: 'Aggressive', labelZh: '積極情境', desc: '加碼贊助與試飲搶佔on-trade市佔，開瓶折扣可以收斂。',
+      overrides: { units: 20000, discountRate: 6, paidMedia: 1040000, sponsorship: 910000, tradeMarketing: 1080000 } },
+  },
+  sources: [{ title: '（本案例未使用付費HBP案例全文）', publisher: 'Business Decision Lab（Claude assumption）', url: '', pubDate: '', accessDate: '2026-08-19', dataPoint: '案例架構參考一般酒類on-trade／off-trade通路訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。', tag: 'assumption' }],
+});
+
+/* -------------------------------------------------------------------------
+ * CASE 3：新型日拋隱形眼鏡通路教育投資決策 — Vision Care / Medical Consumer
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'vision-001',
+  title: '新型日拋隱形眼鏡通路教育投資決策',
+  titleEn: 'ClearDay Daily Lens — Channel Education Investment Decision',
+  industry: 'vision-care',
+  difficulty: 'Advanced',
+  mainSkill: 'B2B2C Trial Conversion',
+  secondarySkills: ['Distributor & Optical Shop Margin', 'Repeat Purchase Economics', 'Regulatory Constraints'],
+  version: 'v1.0',
+  createdDate: '2026-08-19',
+  updatedDate: '2026-08-19',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+  background: {
+    companyProfile: 'ClearDay 是一家虛構的隱形眼鏡品牌，主力產品為日拋型隱形眼鏡，透過全台驗光所與眼鏡行通路銷售，屬於醫療器材類消費品（B2B2C模式）。',
+    productService: 'ClearDay Daily：日拋型隱形眼鏡，每盒30片，訴求高含水量與配戴舒適度。',
+    marketSituation: '隱形眼鏡的購買高度依賴驗光師／眼鏡行的專業推薦，消費者較少主動指名品牌；日拋產品的回購率是獲利關鍵，但首次處方轉換率取決於通路第一線人員是否願意主動推薦。',
+    customer: '18–40歲、有配戴隱形眼鏡需求、重視舒適度與方便性的消費者，多數透過驗光所或眼鏡行完成首次購買。',
+    competitors: '市場上已有多個國際品牌長期經營驗光所關係，部分品牌設有專屬教育訓練團隊定期拜訪通路。',
+    channelStructure: '通路組合：全台約1,200家驗光所／眼鏡行，透過區域代理商鋪貨；消費者回購可透過通路現場或品牌官網訂閱。',
+    strategicChallenge: 'ClearDay需要決定：是否把行銷預算重心從消費者廣告轉向「通路教育投資」（驗光師專業訓練與試戴計畫），來提高第一線的主動推薦意願與處方轉換率，即使這會壓縮短期的消費者端聲量。',
+  },
+  managementDecision: 'ClearDay是否應該把明年度行銷預算重心從消費者廣告轉向通路教育投資（驗光師訓練與試戴計畫），以提高處方轉換率與長期回購率？',
+  decisionSubQuestions: [
+    '是否應以NT$990的單盒（30片）建議售價維持現有定位？',
+    '是否應提供15%的首購試戴優惠折扣？',
+    '通路（驗光所／眼鏡行）加權margin達40%時，是否仍可獲利？',
+    '通路教育投資（訓練與試戴品供應）應投入多少才合理？',
+    '需要達到多少銷量才能break-even？',
+    '如果主力通路要求margin再提高5個百分點，應該調漲價格、縮減教育投資，還是把資源集中在願意主動推薦的通路？',
+  ],
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '建議售價 List Price（每盒30片）', unit: 'NT$/盒', group: '定價與銷量', tag: 'assumption', note: '對標市場日拋型隱形眼鏡的定價帶所設之假設。', editable: true, default: 990 },
+      { key: 'units', label: '首年目標銷售盒數 Units', unit: '盒', group: '定價與銷量', tag: 'assumption', note: '涵蓋首購與回購的合理估計，非真實市調數字。', editable: true, default: 40000 },
+      { key: 'discountRate', label: '首購試戴優惠 Discount Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '促成第一次處方轉換所需的折扣深度假設，通常深於一般消費品因為要克服「换品牌」的心理門檻。', editable: true, default: 15 },
+      { key: 'returnRate', label: '退換貨率 Return Rate（度數不合／過敏）', unit: '%', group: '定價與銷量', tag: 'assumption', note: '隱形眼鏡因個人適配問題產生的退換貨率假設。', editable: true, default: 2 },
+      { key: 'channelMarginRate', label: '通路 Margin Rate（驗光所／眼鏡行）', unit: '%', group: '通路經濟', tag: 'assumption', note: '醫療器材類通路margin通常高於一般消費品，反映專業服務與陳列成本。', editable: true, default: 40 },
+      { key: 'rebateRate', label: 'Rebate Rate（通路年度回饋）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: '假設給主要通路夥伴的年度達標回饋。', editable: true, default: 2 },
+      { key: 'unitCOGS', label: '每盒生產成本 Unit COGS', unit: 'NT$/盒', group: '成本結構', tag: 'assumption', note: '含原料與代工生產成本估計。', editable: true, default: 280 },
+      { key: 'logisticsPerUnit', label: '物流成本（含醫材規範之冷鏈／保存要求）', unit: 'NT$/盒', group: '成本結構', tag: 'assumption', note: '醫療器材配送需符合特定保存條件，成本略高於一般消費品。', editable: true, default: 15 },
+      { key: 'otherVariablePerUnit', label: '其他變動成本（法規／品保／客服）', unit: 'NT$/盒', group: '成本結構', tag: 'assumption', note: '⚠️ 產業特殊性：隱形眼鏡屬醫療器材，需負擔法規合規、不良品通報與品保成本，與一般消費品不同。', editable: true, default: 25 },
+      { key: 'paidMedia', label: 'Paid Media', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '消費者端數位廣告預算假設。', editable: true, default: 1200000 },
+      { key: 'kolPR', label: 'KOL／PR（含視光專業意見領袖）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '含一般消費型KOL與視光專業人士的合作預算假設。', editable: true, default: 500000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '品牌與產品素材製作預算假設。', editable: true, default: 300000 },
+      { key: 'sponsorship', label: 'Sponsorship（驗光師教育研討會）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '專業教育活動贊助預算假設。', editable: true, default: 400000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '其他品牌活動預算假設。', editable: true, default: 200000 },
+      { key: 'tradeMarketing', label: 'Trade Marketing（通路教育訓練＋試戴品供應）', unit: 'NT$（年度）', group: '通路投資', tag: 'assumption', note: '本案例核心決策：投資驗光師專業訓練與消費者試戴品供應，目的是提高主動推薦意願，與品牌端A&P分開計算。', editable: true, default: 1500000 },
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性通路教育投資）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：break-even計算專用的一次性投資，預設＝Total A&P＋Trade Marketing（4,100,000）。', editable: true, default: 4100000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '團隊與法規合規維護費用分攤估計。', editable: true, default: 450000 },
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約35%的Gross Sales。', editable: true, default: 13860000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設行銷與通路教育投資帶來的增量營收約為Gross Sales的18%，日拋回購模式使增量效果更需要嚴謹估計。', editable: true, default: 7128000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設增量銷售的毛利率與整體毛利率相近。', editable: true, default: 55 },
+    ],
+  },
+  missingInformation: [
+    { item: '通路教育訓練實際能提升多少處方轉換率', why: '目前incrementalRevenue假設（18%）沒有前導試點數據支持，是本案例最大的不確定性。', confidence: 'Low' },
+    { item: '消費者實際回購率與換品牌意願', why: '日拋產品的長期獲利高度依賴回購，目前銷量假設未拆分首購與回購比例。', confidence: 'Low' },
+    { item: '主要驗光所通路的實際簽約margin與獨家條件', why: '目前用單一加權平均40%簡化，可能掩蓋個別通路的差異。', confidence: 'Medium' },
+    { item: '法規（醫療器材許可）變動風險', why: '會直接影響otherVariablePerUnit的合規成本假設。', confidence: 'Medium' },
+    { item: '競品在通路教育投資上的實際規模', why: '會影響本案tradeMarketing預算是否具競爭力。', confidence: 'Low' },
+  ],
+  decisionQuestions: STANDARD_DECISION_QUESTIONS,
+  referenceAnswers: [
+    '核心商業問題是：在一個「消費者很少主動指名品牌、購買決策掌握在驗光師手上」的B2B2C市場，行銷預算該花在消費者端（建立品牌知名度）還是通路端（提高第一線主動推薦意願）？這不是預算多寡的問題，而是「說服誰」的問題。',
+    '1) 通路教育訓練能提升多少處方轉換率——這是完全沒有數據支持的假設，卻是本案例18% incremental revenue估計的基礎。2) 首購與回購的銷量結構——如果40,000盒大多是首購而非回購，代表獲客成本效率遠低於預期。3) 通路加權margin 40%是否準確反映不同規模驗光所的差異。',
+    '在Base情境下，Operating Margin僅約9.0%、Break-even占目標量高達約65%，屬於邊際但可行的投資。建議先以小規模試點（例如50家指標驗光所）驗證通路教育訓練對轉換率的實際提升幅度，取得數據後再決定是否全面擴大投資，而不是一次性投入全年預算。',
+    '如果試點結果顯示通路教育訓練對轉換率的提升低於預期（即incremental revenue遠低於18%），應該立即改變決策——薄利的財務結構（Operating Margin僅9.0%）承受不起一個效果不確定的長期投資，此時應該縮小教育投資規模，把資源集中在少數已展現高轉換率的通路，而非平均分散。',
+    '第一句（問題）：ClearDay的通路教育投資決策，核心風險是「教育訓練能否真正提升轉換率」完全沒有數據驗證，而財務結構本身偏薄（Operating Margin約9%）。第二句（建議）：建議先以50家指標驗光所進行3個月試點，用實際轉換率數據取代目前的假設。第三句（但書）：若試點轉換率提升低於預期，應立即縮小教育投資規模，因為目前的財務緩衝無法承受一個效果不確定的長期投資。',
+  ],
+  scenarios: {
+    conservative: { label: 'Conservative', labelZh: '保守情境', desc: '通路要求更高margin，首購折扣需要更深，教育投資效果不如預期。',
+      overrides: { units: 28000, discountRate: 20, channelMarginRate: 45, tradeMarketing: 1050000 } },
+    base: { label: 'Base', labelZh: '基準情境', desc: '依目前通路教育投資計畫的假設執行。', overrides: {} },
+    aggressive: { label: 'Aggressive', labelZh: '積極情境', desc: '通路教育投資效果優於預期，回購率提升帶動銷量成長。',
+      overrides: { units: 55000, discountRate: 10, tradeMarketing: 1950000, paidMedia: 900000 } },
+  },
+  sources: [{ title: '（本案例未使用付費HBP案例全文）', publisher: 'Business Decision Lab（Claude assumption）', url: '', pubDate: '', accessDate: '2026-08-19', dataPoint: '案例架構參考一般B2B2C視光產品通路教育訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。', tag: 'assumption' }],
+});
+
+/* -------------------------------------------------------------------------
+ * CASE 4：機能飲料通路促銷與cannibalization決策 — FMCG
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'fmcg-001',
+  title: '機能飲料通路促銷與cannibalization決策',
+  titleEn: 'Vitalis Functional Beverage — Trade Promotion & Cannibalization Decision',
+  industry: 'fmcg',
+  difficulty: 'Advanced',
+  mainSkill: 'Trade Promotion & Gross-to-Net',
+  secondarySkills: ['Cannibalization Risk', 'Listing Fee Economics', 'Distribution Expansion'],
+  version: 'v1.0',
+  createdDate: '2026-08-19',
+  updatedDate: '2026-08-19',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+  background: {
+    companyProfile: 'Vitalis 是一家虛構的機能飲料品牌，現有主力產品線已在便利商店與量販通路穩定銷售，正評估推出新口味SKU搭配深度通路促銷來搶市佔。',
+    productService: 'Vitalis 新口味機能飲料：24入裝箱規格，訴求機能訴求（如電解質補充）與新口味差異化。',
+    marketSituation: '機能飲料市場競爭激烈，現代通路（超商／超市／量販）的listing fee與端架陳列費用是進入市場的必要成本，新SKU上市常伴隨對既有產品線的cannibalization風險。',
+    customer: '20–40歲、有運動或提神需求、習慣在超商購買機能飲料的消費者。',
+    competitors: '市場上已有多個機能飲料品牌透過密集促銷檔期（買一送一、第二件6折）搶佔貨架與消費者心佔率。',
+    channelStructure: '通路組合：全家型連鎖超商＋量販／超市，需支付上架費（listing fee）並配合檔期促銷。',
+    strategicChallenge: 'Vitalis需要決定：是否推出新口味SKU並搭配深度通路促銷來搶市佔，即使這可能吃掉既有主力產品的銷量（cannibalization），而非帶來真正的增量成長。',
+  },
+  managementDecision: 'Vitalis是否應該推出新口味SKU並投入深度通路促銷來搶佔市佔，即使可能cannibalize現有主力產品的銷量？',
+  decisionSubQuestions: [
+    '是否應以NT$600（24入裝）的建議零售總價維持現有定位？',
+    '是否應提供12%的通路促銷折扣（買二送一等形式換算）？',
+    '現代通路加權margin達32%時，是否仍可獲利？',
+    '上架費與端架陳列等trade marketing應投入多少才合理？',
+    '需要達到多少銷量才能break-even？',
+    '如果主力通路要求margin再提高5個百分點，應該調漲價格、縮減促銷深度，還是集中資源在願意給更好陳列位置的通路？',
+  ],
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '建議零售總價 List Price（24入裝，每瓶NT$25）', unit: 'NT$/箱', group: '定價與銷量', tag: 'assumption', note: '以「箱」為銷售單位換算的消費者端零售總值假設。', editable: true, default: 600 },
+      { key: 'units', label: '首年目標銷售箱數 Units', unit: '箱', group: '定價與銷量', tag: 'assumption', note: '新SKU的鋪貨與銷售目標估計，尚未扣除對既有產品線的cannibalization。', editable: true, default: 200000 },
+      { key: 'discountRate', label: '通路促銷折扣 Discount Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '買二送一／箱購優惠等促銷形式換算之消費者端折扣率。', editable: true, default: 12 },
+      { key: 'returnRate', label: '退貨／過期損耗率 Return Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '飲料類商品的通路退貨與效期損耗假設。', editable: true, default: 2 },
+      { key: 'channelMarginRate', label: '通路 Margin Rate（超商／超市／量販加權）', unit: '%', group: '通路經濟', tag: 'assumption', note: '現代通路的加權平均margin假設。', editable: true, default: 32 },
+      { key: 'rebateRate', label: 'Rebate Rate（通路年度回饋）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: 'FMCG常見的年度達標／成長回饋，比例通常高於其他產業。', editable: true, default: 4 },
+      { key: 'unitCOGS', label: '每箱生產成本 Unit COGS', unit: 'NT$/箱', group: '成本結構', tag: 'assumption', note: '含原料、包材與代工成本估計。', editable: true, default: 220 },
+      { key: 'logisticsPerUnit', label: '物流倉儲成本', unit: 'NT$/箱', group: '成本結構', tag: 'assumption', note: '飲料類商品體積大、配送頻次高，物流成本佔比相對明顯。', editable: true, default: 18 },
+      { key: 'otherVariablePerUnit', label: '其他變動成本（品保／包材耗損）', unit: 'NT$/箱', group: '成本結構', tag: 'assumption', note: '品質保證與包材耗損估計。', editable: true, default: 8 },
+      { key: 'paidMedia', label: 'Paid Media', unit: 'NT$（上市年度）', group: 'A&P投資', tag: 'assumption', note: '數位廣告投放預算假設。', editable: true, default: 2500000 },
+      { key: 'kolPR', label: 'KOL／PR', unit: 'NT$（上市年度）', group: 'A&P投資', tag: 'assumption', note: '社群與生活風格KOL合作預算假設。', editable: true, default: 900000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（上市年度）', group: 'A&P投資', tag: 'assumption', note: '新口味包裝與素材製作預算假設。', editable: true, default: 500000 },
+      { key: 'sponsorship', label: 'Sponsorship（運動／健康活動）', unit: 'NT$（上市年度）', group: 'A&P投資', tag: 'assumption', note: '機能訴求相關活動贊助預算假設。', editable: true, default: 600000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（上市年度）', group: 'A&P投資', tag: 'assumption', note: '其他品牌活動預算假設。', editable: true, default: 300000 },
+      { key: 'tradeMarketing', label: 'Trade Marketing（上架費＋端架陳列＋買贈促銷）', unit: 'NT$（上市年度）', group: '通路投資', tag: 'assumption', note: '現代通路的listing fee與陳列資源通常是FMCG新品上市最大的單一支出項目，與品牌端A&P分開計算。', editable: true, default: 3500000 },
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性上市投資）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：break-even計算專用的一次性投資，預設＝Total A&P＋Trade Marketing（8,300,000）。', editable: true, default: 8300000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '團隊與供應鏈管理費用分攤估計。', editable: true, default: 700000 },
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約30%的Gross Sales。', editable: true, default: 36000000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue（已扣除cannibalization估計）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '⚠️ 關鍵假設：機能飲料新口味上市常見cannibalize既有產品線，此數字已假設扣除對既有SKU的排擠效果，估計約為Gross Sales的8%（遠低於一般未扣除cannibalization的estimate），使用前應以實際銷售數據驗證真實增量比例。', editable: true, default: 9600000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設增量銷售的毛利率與整體毛利率相近。', editable: true, default: 40 },
+    ],
+  },
+  missingInformation: [
+    { item: '新SKU對既有主力產品線的真實cannibalization比例', why: '目前incrementalRevenue已假設扣除cannibalization，但扣除比例本身沒有數據支持，是本案例最大的不確定性。', confidence: 'Low' },
+    { item: '主要通路的實際listing fee與陳列合約條件', why: '目前tradeMarketing為整體估計，未拆分個別通路的實際報價。', confidence: 'Low' },
+    { item: '促銷檔期結束後的銷量回落幅度', why: '促銷帶動的銷量成長是否可持續，會直接影響長期獲利假設。', confidence: 'Medium' },
+    { item: '競品對本次新品上市的促銷反應', why: '若競品同步加碼促銷，可能侵蝕本案的市佔目標與毛利率假設。', confidence: 'Low' },
+    { item: '原物料成本波動風險（影響unitCOGS）', why: '飲料類原料成本波動可能直接壓縮Contribution per Unit。', confidence: 'Medium' },
+  ],
+  decisionQuestions: STANDARD_DECISION_QUESTIONS,
+  referenceAnswers: [
+    '核心商業問題不是「新口味能不能賣」，而是「這200,000箱的銷量成長，有多少是真正從競品或新消費場景搶來的增量，又有多少只是把既有主力產品的消費者轉移過來」。如果大部分是cannibalization，那麼深度通路促銷等於是用毛利率（本案僅33.4%）去換一場左手打右手的內部競爭。',
+    '1) cannibalization比例——incrementalRevenue假設已扣除排擠效果，但扣除多少完全是假設，這是最大的不確定性。2) 促銷檔期結束後的銷量能否維持——如果銷量隨促銷結束而回落，代表這只是需求的時間轉移而非真正成長。3) 通路加權margin 32%是否穩定——FMCG的listing fee與margin要求常隨檔期浮動。',
+    '在Base情境下，Break-even約98,530箱，僅為200,000箱目標的49%，安全邊際尚可，且Operating Margin約11.9%屬FMCG合理水準。建議執行，但要求行銷團隊在上市後第一季，用sell-through數據（而非出貨數據）拆分「新增消費者」與「既有產品線轉移」的比例，作為是否延續深度促銷的checkpoint。',
+    '如果第一季數據顯示cannibalization比例遠高於假設（例如超過一半的新品銷量來自既有產品線流失），決策應該改變——這時應該立即縮減trade marketing促銷深度，把資源轉向真正差異化的消費場景（例如運動情境），而不是繼續用促銷去衝一個左手打右手的銷量數字。',
+    '第一句（問題）：Vitalis新口味上市的核心風險，不是能否達成銷量目標，而是這個銷量有多少是cannibalize既有產品線而非真正增量。第二句（建議）：在Base假設下Break-even僅需約49%的目標量，財務結構可以支撐上市，建議執行。第三句（但書）：但要求上市後第一季用sell-through數據驗證真實cannibalization比例，若超過假設水準，需立即縮減促銷深度並轉向差異化消費場景。',
+  ],
+  scenarios: {
+    conservative: { label: 'Conservative', labelZh: '保守情境', desc: '通路要求更高margin與促銷深度，cannibalization比實際假設更嚴重。',
+      overrides: { units: 130000, discountRate: 18, channelMarginRate: 38, incrementalRevenue: 4800000 } },
+    base: { label: 'Base', labelZh: '基準情境', desc: '依目前新品上市計畫的假設執行。', overrides: {} },
+    aggressive: { label: 'Aggressive', labelZh: '積極情境', desc: '新口味帶來真正增量消費場景，cannibalization低於預期。',
+      overrides: { units: 280000, discountRate: 8, tradeMarketing: 4200000, incrementalRevenue: 16800000 } },
+  },
+  sources: [{ title: '（本案例未使用付費HBP案例全文）', publisher: 'Business Decision Lab（Claude assumption）', url: '', pubDate: '', accessDate: '2026-08-19', dataPoint: '案例架構參考一般FMCG新品上市與trade promotion訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。', tag: 'assumption' }],
+});
+
+/* -------------------------------------------------------------------------
+ * CASE 5：電商平台免運補貼與獲客效率決策 — E-commerce / Marketplace
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'ecom-001',
+  title: '電商平台免運補貼與獲客效率決策',
+  titleEn: 'NestHome D2C — Free-Shipping Subsidy & CAC Efficiency Decision',
+  industry: 'ecommerce-marketplace',
+  difficulty: 'Advanced',
+  mainSkill: 'Contribution Margin & CAC',
+  secondarySkills: ['Free Shipping Threshold', 'Platform Take Rate', 'Repeat Purchase'],
+  version: 'v1.0',
+  createdDate: '2026-08-19',
+  updatedDate: '2026-08-19',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+  background: {
+    companyProfile: 'NestHome 是一家虛構的D2C家居生活用品電商品牌，主要透過官網與少量第三方平台銷售，正評估調降免運門檻並加碼平台廣告來衝刺獲客。',
+    productService: 'NestHome：家居生活用品（收納、寢具、小家飾），平均客單價約NT$1,350。',
+    marketSituation: '電商市場的免運門檻是消費者下單決策的重要心理關卡，調降門檻通常能提高轉換率與訂單量，但會直接墊高每筆訂單的物流補貼成本，壓縮contribution margin。',
+    customer: '25–40歲、重視居家佈置、習慣線上購物的都會消費者。',
+    competitors: '主要電商平台與同類D2C品牌普遍以「滿NT$990免運」或更低門檻作為常態促銷手段。',
+    channelStructure: '官網直營為主（D2C），另有少量透過第三方平台銷售需支付take rate；金流與物流由第三方服務商處理。',
+    strategicChallenge: 'NestHome需要決定：是否把免運門檻從NT$1,500調降到NT$990並加碼效能廣告，用更高的物流補貼成本換取更多訂單量與市佔，還是維持現有門檻以保護單筆訂單的獲利能力。',
+  },
+  managementDecision: 'NestHome是否應該調降免運門檻並加碼平台廣告來衝刺獲客，即使會壓縮每筆訂單的contribution margin？',
+  decisionSubQuestions: [
+    '是否應以NT$1,350的平均客單價（AOV）維持現有定位？',
+    '是否應提供10%的檔期促銷折扣？',
+    '在金流與平台費用合計約6%、退貨率8%的結構下，是否仍可獲利？',
+    'Paid Media效能廣告應投入多少才合理？',
+    '需要達到多少訂單數才能break-even？',
+    '如果調降免運門檻後物流補貼成本大幅上升，應該調漲客單價門檻、縮減廣告投放，還是接受更低的單筆獲利去換取訂單量與市佔？',
+  ],
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '平均客單價 List Price（AOV）', unit: 'NT$/筆訂單', group: '定價與銷量', tag: 'assumption', note: '現有訂單資料的平均客單價假設。', editable: true, default: 1350 },
+      { key: 'units', label: '首年目標訂單數 Units', unit: '筆', group: '定價與銷量', tag: 'assumption', note: '調降免運門檻後的訂單量成長估計，非真實歷史數據。', editable: true, default: 60000 },
+      { key: 'discountRate', label: '檔期促銷折扣 Discount Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '雙11／週年慶等檔期的消費者端折扣假設。', editable: true, default: 10 },
+      { key: 'returnRate', label: '退貨率 Return Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '電商退貨率通常高於實體通路，家居用品類別的退貨率估計。', editable: true, default: 8 },
+      { key: 'channelMarginRate', label: '平台抽成／金流手續費 Channel Margin Rate', unit: '%', group: '通路經濟', tag: 'assumption', note: '⚠️ 產業對應：D2C官網以金流手續費為主，若透過第三方平台銷售則另計take rate，此處為兩者的加權平均概念，非傳統零售通路margin。', editable: true, default: 6 },
+      { key: 'rebateRate', label: 'Rebate Rate（平台行銷基金回饋）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: '部分平台提供的行銷基金回饋，比例通常較低。', editable: true, default: 0.5 },
+      { key: 'unitCOGS', label: '每筆訂單平均商品成本 Unit COGS', unit: 'NT$/筆', group: '成本結構', tag: 'assumption', note: '假設商品成本約為AOV的40%。', editable: true, default: 540 },
+      { key: 'logisticsPerUnit', label: '免運補貼＋物流配送成本', unit: 'NT$/筆', group: '成本結構', tag: 'assumption', note: '⚠️ 本案例核心決策變數：調降免運門檻會讓更高比例的訂單符合免運資格，這裡的數字代表品牌吸收的平均物流補貼，門檻越低，這個數字通常越高。', editable: true, default: 180 },
+      { key: 'otherVariablePerUnit', label: '其他變動成本（客服／包材）', unit: 'NT$/筆', group: '成本結構', tag: 'assumption', note: '客服與包材成本估計。', editable: true, default: 35 },
+      { key: 'paidMedia', label: 'Paid Media（效能廣告）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '社群與關鍵字效能廣告預算假設，是獲客的主要槓桿。', editable: true, default: 4000000 },
+      { key: 'kolPR', label: 'KOL／PR', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '居家生活風格KOL合作預算假設。', editable: true, default: 1000000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '商品攝影與廣告素材製作預算假設。', editable: true, default: 400000 },
+      { key: 'sponsorship', label: 'Sponsorship', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '品牌活動贊助預算假設。', editable: true, default: 200000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '其他品牌活動預算假設。', editable: true, default: 300000 },
+      { key: 'tradeMarketing', label: 'Trade Marketing（平台站內廣告資源）', unit: 'NT$（年度）', group: '通路投資', tag: 'assumption', note: '第三方平台首頁曝光與站內廣告資源，與品牌端A&P分開計算。', editable: true, default: 800000 },
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性獲客投資）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：break-even計算專用的一次性投資，預設＝Total A&P＋Trade Marketing（6,700,000）。', editable: true, default: 6700000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '團隊與系統維運費用分攤估計。', editable: true, default: 600000 },
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約40%的Gross Sales，電商的付費廣告歸因通常較高。', editable: true, default: 32400000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設行銷投資帶來的增量營收約為Gross Sales的20%。', editable: true, default: 16200000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設增量銷售的毛利率與整體毛利率相近。', editable: true, default: 42 },
+    ],
+  },
+  missingInformation: [
+    { item: '調降免運門檻後，實際訂單量成長幅度與物流補貼成本上升幅度', why: '這是本案例核心的trade-off，目前units與logisticsPerUnit都是假設，沒有A/B測試數據支持。', confidence: 'Low' },
+    { item: '客戶終身價值（LTV）與回購率', why: '免運補貼是否划算，取決於獲得的新客戶未來是否會回購，目前案例僅計算首年單筆訂單經濟，未納入LTV。', confidence: 'Low' },
+    { item: '第三方平台實際take rate與行銷資源交換條件', why: '目前channelMarginRate為簡化的加權估計，未拆分官網與平台各自的真實費用結構。', confidence: 'Medium' },
+    { item: '競品的免運門檻與廣告投放強度', why: '會直接影響本案調降門檻是否能有效轉換為市佔成長。', confidence: 'Low' },
+    { item: '退貨率是否因免運政策改變而上升', why: '免運降低下單門檻，也可能降低消費者購買前的審慎程度，退貨率有上升風險。', confidence: 'Medium' },
+  ],
+  decisionQuestions: STANDARD_DECISION_QUESTIONS,
+  referenceAnswers: [
+    '核心商業問題是：調降免運門檻是一個「用更高的物流補貼成本，換取更多訂單量與市佔」的交易，但這個交易划算與否，不能只看首年單筆訂單的contribution margin，還要看這些新增訂單背後的客戶未來是否會回購（LTV）——這正是本案例故意保留的Missing Information。',
+    '1) 調降門檻後訂單量究竟會成長多少——目前60,000筆是假設，沒有A/B測試數據。2) 物流補貼成本會墊高多少——logisticsPerUnit是本案例最敏感的變數之一。3) 這些用免運吸引來的新客戶，回購率是否健康——如果只是一次性低價導向的客戶，LTV可能很低，讓整個投資不划算。',
+    '在Base情境下，Break-even約23,924筆，僅為60,000筆目標的40%，Operating Margin約15.3%，財務結構健康，建議執行調降門檻的測試，但應該先以小規模流量做A/B測試，同時追蹤這批新客戶3–6個月的回購行為，而不是直接all-in全年預算。',
+    '如果物流補貼成本（logisticsPerUnit）因訂單量增加而超出假設許多（例如因為平均客單價下降、更多小額訂單符合免運資格），應該立即改變決策——重新評估免運門檻是否設定過低，或改用「滿額贈品」取代「免運」來達到類似的轉換誘因，同時保護物流成本結構。',
+    '第一句（問題）：調降免運門檻能否提升訂單量與市佔，核心不確定性在於實際成本上升幅度與新客戶的長期回購價值都還沒驗證。第二句（建議）：在Base假設下Break-even僅需40%的目標訂單量，財務結構可以支撐一次測試，建議先做小規模A/B測試。第三句（但書）：若物流補貼成本或退貨率明顯超出假設，或新客戶回購率偏低，建議暫緩全面調降門檻，改用滿額贈品等成本更可控的替代方案。',
+  ],
+  scenarios: {
+    conservative: { label: 'Conservative', labelZh: '保守情境', desc: '調降門檻後物流補貼成本上升幅度超出預期，退貨率同步上升。',
+      overrides: { units: 42000, returnRate: 11, logisticsPerUnit: 240, paidMedia: 3200000 } },
+    base: { label: 'Base', labelZh: '基準情境', desc: '依目前免運門檻調整計畫的假設執行。', overrides: {} },
+    aggressive: { label: 'Aggressive', labelZh: '積極情境', desc: '訂單量顯著成長，物流補貼成本控制在合理範圍，回購率健康。',
+      overrides: { units: 95000, discountRate: 6, paidMedia: 5200000, logisticsPerUnit: 160 } },
+  },
+  sources: [{ title: '（本案例未使用付費HBP案例全文）', publisher: 'Business Decision Lab（Claude assumption）', url: '', pubDate: '', accessDate: '2026-08-19', dataPoint: '案例架構參考一般D2C電商免運與獲客效率訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。', tag: 'assumption' }],
+});
+
+/* -------------------------------------------------------------------------
+ * CASE 6：SaaS免費試用轉換與CAC回收期決策 — SaaS Subscription
+ * ---------------------------------------------------------------------- */
+CASES.push({
+  id: 'saas-001',
+  title: 'SaaS免費試用轉換與CAC回收期決策',
+  titleEn: 'Flowdesk — Free Trial Extension & CAC Payback Decision',
+  industry: 'saas-subscription',
+  difficulty: 'Advanced',
+  mainSkill: 'CAC, LTV & Payback Period',
+  secondarySkills: ['Gross Margin', 'Free Trial Conversion', 'Sales & Marketing Efficiency'],
+  version: 'v1.0',
+  createdDate: '2026-08-19',
+  updatedDate: '2026-08-19',
+  status: 'Public',
+  origin: 'Original',
+  originNote: '本模擬案例僅參考公開市場常識與產業一般結構，並非Harvard Business Publishing原始案例的重製或摘要，亦非任何真實公司之機密資料。',
+  background: {
+    companyProfile: 'Flowdesk 是一家虛構的B2B SaaS專案管理工具，主力銷售模式為年繳訂閱，透過官網自助購買與少量經銷夥伴銷售。',
+    productService: 'Flowdesk：B2B專案管理SaaS工具，年繳訂閱每席位NT$14,400（月費NT$1,200 x 12）。',
+    marketSituation: 'SaaS產品的獲利結構與COGS極低（hosting與support成本遠低於實體商品的製造成本），核心決策槓桿在於Customer Acquisition Cost（CAC）與轉換率，而非傳統的通路margin。',
+    customer: '中小企業與新創團隊的專案經理／營運主管，多數透過免費試用後自行評估購買。',
+    competitors: '市場上已有多個國際SaaS工具提供14天免費試用，部分競品提供更長試用期搭配銷售人員協助導入（sales assist）。',
+    channelStructure: '主要透過官網自助訂閱（PLG, product-led growth），少量透過經銷夥伴／affiliate銷售。',
+    strategicChallenge: 'Flowdesk需要決定：是否把免費試用期從14天延長到30天，並加碼銷售協助（sales assist）資源，來提高付費轉換率，即使這會拉長CAC回收期（payback period）並增加試用期間的服務成本。',
+  },
+  managementDecision: 'Flowdesk是否應該延長免費試用期並加碼Sales Assist資源，以提高付費轉換率，即使會拉長CAC回收期？',
+  decisionSubQuestions: [
+    '是否應以每席位年繳NT$14,400維持現有定價？',
+    '是否應提供15%的年繳優惠折扣？',
+    '在通路／經銷佣金15%的結構下，是否仍可獲利？',
+    'Sales Assist（試用期客戶成功支援）應投入多少資源才合理？',
+    '需要達到多少新增訂閱席位數才能break-even？',
+    '如果延長試用期後Sales Assist成本大幅上升，應該調漲定價、縮短試用期，還是只針對高潛力客戶提供人工協助？',
+  ],
+  financialInputs: {
+    currency: 'TWD',
+    fields: [
+      { key: 'listPrice', label: '年繳訂閱單價 List Price（每席位／年）', unit: 'NT$/席位/年', group: '定價與銷量', tag: 'assumption', note: '月費NT$1,200換算之年繳定價假設。', editable: true, default: 14400 },
+      { key: 'units', label: '首年目標新增年約訂閱席位數 Units', unit: '席位', group: '定價與銷量', tag: 'assumption', note: '延長試用期後的新增訂閱數估計，非真實歷史數據。', editable: true, default: 2500 },
+      { key: 'discountRate', label: '年繳優惠 Discount Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: '相對月繳的年繳優惠折扣假設。', editable: true, default: 15 },
+      { key: 'returnRate', label: '中途取消／退款率 Return Rate', unit: '%', group: '定價與銷量', tag: 'assumption', note: 'SaaS訂閱的合約期間退款率假設（對應非SaaS產業的「退貨率」概念）。', editable: true, default: 3 },
+      { key: 'channelMarginRate', label: '通路／經銷佣金 Channel Margin Rate', unit: '%', group: '通路經濟', tag: 'assumption', note: '⚠️ 產業對應：SaaS的「通路margin」通常代表經銷夥伴或affiliate的銷售佣金，而非實體通路加價，此處沿用相同欄位但意義不同。', editable: true, default: 15 },
+      { key: 'rebateRate', label: 'Rebate Rate（通路年度達標獎金）', unit: '%（以Net Consumer Sales計）', group: '通路經濟', tag: 'assumption', note: '經銷夥伴的年度達標獎金假設。', editable: true, default: 1 },
+      { key: 'unitCOGS', label: '每席位年度Cost to Serve（Hosting＋Support）', unit: 'NT$/席位/年', group: '成本結構', tag: 'assumption', note: '⚠️ 產業特殊性：SaaS的COGS（伺服器、雲端運算、基礎客服）遠低於實體商品的製造成本，這是SaaS毛利率遠高於其他產業的關鍵原因，對應spec「Cost to Serve」概念。', editable: true, default: 1800 },
+      { key: 'logisticsPerUnit', label: 'Onboarding導入成本（對應「物流」欄位）', unit: 'NT$/席位', group: '成本結構', tag: 'assumption', note: 'SaaS沒有實體物流，此欄位代表新客戶的導入設定與初期教學成本。', editable: true, default: 400 },
+      { key: 'otherVariablePerUnit', label: '其他變動成本（金流／客服）', unit: 'NT$/席位', group: '成本結構', tag: 'assumption', note: '金流手續費與例行客服成本估計。', editable: true, default: 150 },
+      { key: 'paidMedia', label: 'Paid Media', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: 'B2B關鍵字與內容行銷廣告預算假設。', editable: true, default: 2200000 },
+      { key: 'kolPR', label: 'KOL／PR（產業意見領袖）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: 'B2B產業意見領袖合作預算假設。', editable: true, default: 400000 },
+      { key: 'creativeProduction', label: 'Creative Production', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '品牌與產品素材製作預算假設。', editable: true, default: 250000 },
+      { key: 'sponsorship', label: 'Sponsorship（產業研討會）', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: 'B2B產業活動贊助預算假設。', editable: true, default: 350000 },
+      { key: 'otherBrandInvestment', label: 'Other Brand Investment', unit: 'NT$（年度）', group: 'A&P投資', tag: 'assumption', note: '其他品牌活動預算假設。', editable: true, default: 200000 },
+      { key: 'tradeMarketing', label: 'Trade Marketing（Sales Assist試用期支援）', unit: 'NT$（年度）', group: '通路投資', tag: 'assumption', note: '本案例核心決策：延長試用期需要更多真人銷售協助資源，才能在30天內持續引導客戶完成評估與轉換，與品牌端A&P分開計算。', editable: true, default: 1200000 },
+      { key: 'fixedLaunchInvestment', label: 'Fixed Launch Investment（一次性試用期擴大投資）', unit: 'NT$', group: '固定投資', tag: 'assumption', note: '⚠️ 定義：break-even計算專用的一次性投資，預設＝Total A&P＋Trade Marketing（4,600,000）。', editable: true, default: 4600000 },
+      { key: 'allocatedFixedCost', label: 'Allocated Fixed Cost（每期經常性overhead分攤）', unit: 'NT$（每季）', group: '固定投資', tag: 'assumption', note: '產品與工程團隊費用分攤估計。', editable: true, default: 550000 },
+      { key: 'attributedRevenue', label: 'Attributed Revenue（Paid Media歸因營收）', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設Paid Media可歸因約32%的Gross Sales。', editable: true, default: 11520000 },
+      { key: 'incrementalRevenue', label: 'Incremental Revenue', unit: 'NT$', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: '假設行銷與Sales Assist投資帶來的增量營收約為Gross Sales的22%。', editable: true, default: 7920000 },
+      { key: 'incrementalGrossMarginRate', label: 'Incremental Gross Margin %', unit: '%', group: '行銷效率（ROAS／ROMI）', tag: 'assumption', note: 'SaaS的高毛利結構使增量銷售的邊際毛利率也維持在高水位。', editable: true, default: 70 },
+    ],
+  },
+  missingInformation: [
+    { item: '延長試用期（14天→30天）對實際轉換率的提升幅度', why: '目前units與incrementalRevenue假設都建立在「延長試用期會提升轉換率」的前提上，但沒有A/B測試數據支持，是本案例最大的不確定性。', confidence: 'Low' },
+    { item: '客戶流失率（churn rate）與續約率', why: '本案例僅計算首年新增訂閱的財務，未納入長期LTV，而SaaS的獲利本質高度依賴續約率。', confidence: 'Low' },
+    { item: 'Sales Assist人力成本是否會隨試用期延長而超線性成長', why: '目前tradeMarketing為整體估計，未拆分每位Sales Assist人員可負擔的試用客戶數上限。', confidence: 'Medium' },
+    { item: '競品的試用期長度與轉換率benchmark', why: '會影響延長試用期是否為市場中具競爭力的策略選擇。', confidence: 'Medium' },
+    { item: 'CAC payback period是否符合公司財務健康標準', why: '本案例的Fixed Launch Investment與Break-even計算尚未換算成標準SaaS的payback period（月數）指標。', confidence: 'Low' },
+  ],
+  decisionQuestions: STANDARD_DECISION_QUESTIONS,
+  referenceAnswers: [
+    '核心商業問題是：延長免費試用期是一個「用更高的Sales Assist成本與更長的CAC回收期，換取更高付費轉換率」的交易，但SaaS的獲利本質建立在長期續約（LTV）上，而本案例的財務模型只計算了首年新增訂閱，完全沒有納入churn rate與續約率——這是評估這個決策時最大的盲點。',
+    '1) 延長試用期對轉換率的實際提升幅度——完全是假設，沒有A/B測試數據。2) 客戶流失率／續約率——如果延長試用期吸引來的是「觀望型」而非「高意願」客戶，續約率可能反而更低，讓CAC回收期進一步拉長。3) Sales Assist人力是否能線性擴張——如果每位Sales Assist人員能負擔的客戶數有上限，成本可能隨試用客戶數超線性成長。',
+    '在Base情境下，Operating Margin高達約55.5%、Break-even僅需約608席位（僅目標的24%），反映SaaS產業典型的高毛利結構，財務上有充足空間支撐測試。建議先針對「高潛力客戶」（例如試用期間活躍度較高的帳號）提供延長試用與Sales Assist，而非對所有試用戶一視同仁，這樣可以用較低的邊際成本驗證延長試用期的效果。',
+    '如果延長試用期後轉換率沒有明顯提升，但Sales Assist成本已經投入，應該立即改變決策——縮回14天標準試用期，把Sales Assist資源集中在成交機率最高的少數客戶（例如企業版／多席位詢問），而不是平均分攤在所有試用用戶身上，避免CAC payback period被不必要地拉長。',
+    '第一句（問題）：Flowdesk延長試用期的決策，核心風險不是財務結構（Operating Margin高達55.5%，緩衝充足），而是「轉換率是否真的會提升」與「這些客戶的長期續約率」完全沒有數據驗證。第二句（建議）：建議先針對高潛力客戶小規模測試延長試用期＋Sales Assist，而非全面推行。第三句（但書）：若測試轉換率沒有明顯提升，應立即縮回標準試用期，並追蹤6–12個月續約率再決定是否擴大投資，因為SaaS的真實獲利在續約而非首年新客。',
+  ],
+  scenarios: {
+    conservative: { label: 'Conservative', labelZh: '保守情境', desc: '延長試用期對轉換率提升有限，Sales Assist成本超出預期。',
+      overrides: { units: 1600, discountRate: 20, channelMarginRate: 18, tradeMarketing: 1560000 } },
+    base: { label: 'Base', labelZh: '基準情境', desc: '依目前延長試用期＋Sales Assist計畫的假設執行。', overrides: {} },
+    aggressive: { label: 'Aggressive', labelZh: '積極情境', desc: '延長試用期顯著提升轉換率，續約率同步健康成長。',
+      overrides: { units: 4200, discountRate: 10, paidMedia: 2860000, tradeMarketing: 1560000 } },
+  },
+  sources: [{ title: '（本案例未使用付費HBP案例全文）', publisher: 'Business Decision Lab（Claude assumption）', url: '', pubDate: '', accessDate: '2026-08-19', dataPoint: '案例架構參考一般B2B SaaS免費試用與CAC效率訓練主題自建，數字為Claude assumption，非真實市場調查或財報數字。', tag: 'assumption' }],
+});
+
+function getCaseById(id) { return CASES.find((c) => c.id === id); }
+function getCasesByIndustry(industryId) { return CASES.filter((c) => c.industry === industryId); }
+function getIndustry(id) { return INDUSTRIES.find((i) => i.id === id); }
+
+/* =========================================================================
+ * Business Decision Lab — Claude Coach 內容庫
+ * -------------------------------------------------------------------------
+ * 誠實說明（重要）：此頁面是純前端靜態網頁，沒有連接Claude API，因此
+ * 「Claude Coach」在v1的實作方式是——
+ *   1) 下方預先寫好的Socratic提示／挑戰問題庫，引導你在頁面上思考、記錄；
+ *   2) 真正的動態追問、辯證與評分，建議你把此頁的P&L結果與假設，帶到與
+ *      Claude的即時對話（例如本次建立這個系統的對話）中進行，再把
+ *      Claude給你的挑戰、回饋與分數，記錄回「Review Mode」的表單裡——
+ *      這樣所有紀錄仍會保存在同一份Session紀錄與Progress趨勢中。
+ * 下一輪迭代的路線圖：串接Claude API，讓Challenge/Review Mode可以直接在
+ * 頁面內即時對話與評分（需要後端或使用者自備API key，見README）。
+ * ========================================================================= */
+
+const RUBRIC = [
+  { key: 'financialAccuracy', label: 'Financial Accuracy', labelZh: '財務準確度', weight: 20 },
+  { key: 'commercialReasoning', label: 'Commercial Reasoning', labelZh: '商業判斷', weight: 20 },
+  { key: 'assumptionQuality', label: 'Assumption Quality', labelZh: '假設品質', weight: 15 },
+  { key: 'riskRecognition', label: 'Risk Recognition', labelZh: '風險辨識', weight: 15 },
+  { key: 'apAllocation', label: 'A&P Allocation', labelZh: 'A&P配置判斷', weight: 15 },
+  { key: 'executiveCommunication', label: 'Executive Communication', labelZh: '高階溝通', weight: 15 },
+];
+
+const MODE_INTRO = {
+  case: 'Case Mode：這裡只顯示案例背景、資料與問題，不會提前顯示建議答案。請先閱讀左側Case Brief與Missing Information，再開始建立你的假設。',
+  model: 'Model Mode：請在中央P&L輸入區調整數字，並在下方Assumption Log中，針對每個你修改過的假設寫下：數字來源、假設邏輯、風險、Confidence level。系統不會替你完成判斷。',
+  challenge: 'Challenge Mode：角色會依序提出問題，一次只回答一題，主問題答完後可能還有追問。回答完每位角色的主問題後，可以點「顯示Claude參考回答」比較差異——建議先寫下自己的答案再點開，而不是直接看答案。',
+  review: 'Review Mode：完成決策後，依照固定rubric為自己（或請Claude）評分。請誠實填寫，不要因為語氣流暢就給高分——評分依據應該是財務邏輯與商業判斷的品質。',
+  portfolio: 'Portfolio Mode：把已完成的Session轉換成面試安全版本。系統會自動去識別化敏感欄位，你可再手動調整摘要文字。',
+};
+
+// 每個角色的問題會依序（含follow-up）逐一提出；主問題回答後可選擇顯示參考回答再繼續（前端邏輯見 app.js）
+// referenceAnswer 為Base情境下的示範計算，非唯一標準答案，用來讓使用者比對自己的回答，而非取代自己的判斷。
+const CHALLENGE_QUESTIONS = {
+  'phai-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'NT$29,900的定價，加上8%上市折扣，你怎麼向我證明這個組合不是「用毛利換銷量」的短視決策？',
+      referenceAnswer: '因為毛利結構還在：即使有8%折扣與3%退貨，Net Consumer Sales仍有Gross Sales的約89%，扣除28%通路margin與2%rebate後，Company Net Revenue的Gross Margin仍有約49.0%——代表折扣沒有把毛利打穿，只是把消費者最終付出的價格往下調整，用來換取上市初期的曝光與試用。真正該檢驗「是否用毛利換銷量」的指標不是折扣本身，而是Operating Margin有沒有守住（Base情境約37.7%，仍屬健康水準）；若折扣換來的銷量成長無法轉換成Operating Profit的正貢獻（用ROMI而非ROAS檢驗），那才是真正的短視操作。',
+      followUps: [
+        '如果我把折扣拿掉、只靠KOL/PR創造需求，你的銷量假設會掉多少？你有數據支持嗎？',
+        '你的unit COGS假設如果被供應鏈報價高估10%，Operating Profit還會是正的嗎？',
+      ] },
+    { persona: 'GM', personaZh: 'GM（台灣總經理）',
+      question: '通路要求28%的margin已經不低了，如果他們談到要33%，你打算漲價、砍A&P，還是放棄部分通路？請給我一個決定，不要三個都要。',
+      referenceAnswer: '我會選擇溫和調漲List Price（例如上調3–5%），而不是砍A&P或放棄通路。理由：A&P是建立品牌知名度的關鍵武器，在一個完全沒有知名度的新市場砍A&P，風險是銷量假設直接落空，那反而讓通路margin的問題變得無關緊要，因為連基本量都達不到；放棄通路則會直接犧牲鋪貨覆蓋率，在上市初期更是致命。漲價的風險是消費者對價格帶的敏感度，需要先用敏感度分析確認售價的安全區間，同時我會要求通路用更好的陳列位置或曝光資源作為交換，而不是單方面吸收margin壓力。',
+      followUps: [
+        '如果你選擇漲價，消費者的discount sensitivity你怎麼驗證？如果選擇砍A&P，你怎麼確保銷量不會同步下滑？',
+      ] },
+    { persona: 'Regional HQ', personaZh: '區域總部',
+      question: '你要求的首波A&P預算，跟其他市場的launch A&P%的比例相比，是偏高還是偏低？為什麼台灣需要不一樣的投入？',
+      referenceAnswer: '以Base情境計算，Total A&P約佔Company Net Revenue的5.5%，若把Trade Marketing也算進廣義行銷投資，比例約6.5%。這個比例本身無法脫離benchmark單獨判斷合理性，但台灣的特殊性在於：品牌完全沒有既有知名度，需要更高的KOL/PR比重去建立信任感，而非只靠paid media衝流量，這也是為什麼本案KOL/PR預算高於Creative Production與Sponsorship的總和。如果總部要求對齊其他市場的比例，我會建議優先保留KOL/PR的絕對投資，從Sponsorship或Other Brand Investment這類效益較難衡量的項目縮減。',
+      followUps: [
+        '如果總部只批准你要求預算的70%，你的break-even銷量會延後多久？哪些A&P項目你會優先砍？',
+      ] },
+    { persona: 'Retail Partner', personaZh: '零售通路窗口',
+      question: '我們願意給你端架陳列，但你要保證多少銷量與多少trade marketing資源？你怎麼算出這個數字是雙方都划算的？',
+      referenceAnswer: '基準情境下Trade Marketing預算約NT$1.2M；只要端架陳列帶來的增量銷量，其Contribution per Unit（約NT$8,378／台）累積起來能打平這筆投資，這筆交易就划算——換算下來大約只需要140幾台的增量銷量，門檻其實不高。但我不會用「總銷量」去承諾，而是用「可歸因的增量銷量」去承諾，避免把本來就會自然發生的銷量算成陳列的功勞。',
+      followUps: [] },
+    { persona: 'Supply Chain', personaZh: '供應鏈負責人',
+      question: '你的退貨率假設是3%，但這是大型家電，物流與整新成本比小家電高很多——這個假設你是怎麼來的？如果實際是6%呢？',
+      referenceAnswer: '3%是Claude assumption，參考高單價家電、電商通路的一般退貨率區間，並非本集團在台灣或類似市場的實際歷史數據——這正是案例Missing Information中明確列為Low confidence的一項，需要在正式決策前向供應鏈與客服部門索取真實數字校正。如果退貨率實際是6%，影響是雙重的：一是Returns（Gross Sales × Return Rate）會多損失一倍金額，直接侵蝕Net Consumer Sales；二是退貨品的整新、二次配送等成本，理論上也該反映在Variable Operating Cost，代表目前的Operating Profit可能被高估——這是上市前必須驗證的checkpoint之一。',
+      followUps: [] },
+  ],
+
+  'alcohol-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'ROAS看起來有近14倍，為什麼ROMI卻是負的？你要怎麼說服我這筆A&P與贊助投資是合理的？',
+      referenceAnswer: '因為ROAS只計算歸因營收、不扣成本，而ROMI用incremental gross profit跟實際行銷投入比較——本案假設incremental revenue僅占Gross Sales的15%，乘上45%邊際毛利率後，遠不足以覆蓋350萬的品牌與通路投資，代表這筆錢短期無法用單年ROMI證明。但on-trade投資的核心價值是建立長期定價權與品牌關係，我會建議用「多年攤提」角度、搭配鋪點數與回購率而非單年ROMI來評估這筆投資。',
+      followUps: [] },
+    { persona: 'GM', personaZh: 'GM（台灣總經理）',
+      question: 'on-trade通路要求35%的margin，如果他們談到40%，你打算漲價、砍贊助預算，還是縮小合作規模？',
+      referenceAnswer: '我會選擇溫和調漲售價，而不是砍贊助或縮小合作規模。威士忌消費者對高單價品項的價格敏感度通常低於平價消費品，且贊助與試飲是建立品牌關係的關鍵武器，在關係尚未穩固的階段砍預算風險更高；縮小合作規模則直接犧牲鋪貨覆蓋率。我會先用敏感度分析確認調價後Operating Profit是否仍為正，再決定調價幅度。',
+      followUps: [] },
+    { persona: 'Regional HQ', personaZh: '區域總部',
+      question: '其他市場都還是off-trade為主，為什麼台灣需要投入on-trade通路？',
+      referenceAnswer: '因為off-trade的成長已經接近天花板，而on-trade雖然投資更重，卻是唯一能建立長期定價權與品牌溢價的通路——消費者在餐廳／酒吧的點單經驗，會直接轉化成日後在off-trade指名購買的意願。這是一個「用短期較低的ROMI，換取長期品牌資產」的策略選擇，需要用鋪點數、重複造訪率等領先指標來衡量，而不是單看首年財務報酬。',
+      followUps: [] },
+    { persona: 'On-trade Partner', personaZh: '餐廳／酒吧採購窗口',
+      question: '你要保證多少瓶的銷量與多少試飲支援，才值得我們給你吧檯陳列與酒單曝光？',
+      referenceAnswer: '基準情境下Trade Marketing（試飲與POSM）預算約NT$900,000；只要陳列帶來的增量銷量，用Contribution per Unit（約NT$493／瓶）累積起來能打平這筆投資，交易就划算——換算約需要1,800多瓶的增量銷量。我不會用「總銷量」承諾，而是用「可歸因的增量銷量」承諾，並優先鎖定轉換率較高的少數指標酒吧，而非平均分散資源。',
+      followUps: [] },
+    { persona: 'Tax & Compliance', personaZh: '稅務／法規負責人',
+      question: '如果菸酒稅調漲，你的定價策略要怎麼反應？',
+      referenceAnswer: '菸酒稅是計入Other Variable Cost的變動成本，調漲會直接壓縮Contribution per Unit——如果選擇由公司吸收，Operating Margin會被壓縮；如果選擇轉嫁給消費者調漲售價，則要重新用敏感度分析確認消費者是否還能接受。我傾向部分轉嫁、部分吸收，並優先確保Break-even門檻仍遠低於目標銷量，而不是讓稅務變動直接侵蝕已經偏薄的16.6%營業利潤率。',
+      followUps: [] },
+  ],
+
+  'vision-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'Operating Margin只有9%，比其他案例薄很多，你怎麼證明這個通路教育投資值得做？',
+      referenceAnswer: '確實，Base情境的Operating Margin只有9.0%，緩衝很薄，但Break-even只需要約26,184盒（目標的65%），不是完全不可行。我不會直接說「值得做」，而是建議先用小規模試點驗證通路教育訓練對轉換率的實際提升幅度——目前18%的incremental revenue完全是假設，沒有數據支持，這才是決定這筆投資是否合理的關鍵，而不是財務模型本身。',
+      followUps: [] },
+    { persona: 'GM', personaZh: 'GM（台灣總經理）',
+      question: '如果通路要求margin從40%再往上加5個百分點，你要漲價、砍教育投資，還是只服務願意主動推薦的通路？',
+      referenceAnswer: '我會選擇集中資源在願意主動推薦的通路，而不是全面漲價或砍教育投資。這個生意的核心邏輯是「說服驗光師主動推薦」，如果對所有通路一視同仁，教育投資的邊際效益會被稀釋；把資源集中在少數高潛力、高轉換的通路，用更深的關係換取更高的推薦率，會比平均分散更有效率，且不需要承擔全面漲價對消費者需求的風險。',
+      followUps: [] },
+    { persona: 'Regional HQ', personaZh: '區域總部',
+      question: '這個投資的Operating Margin這麼薄，總部為什麼要批准？',
+      referenceAnswer: '因為這是一個「建立長期回購基礎」的投資，而不是追求首年財務報酬——隱形眼鏡是高頻回購商品，一旦驗光師建立起主動推薦的習慣，長期的回購營收不會反映在這份僅計算首年新客的財務模型裡。我會建議用一個明確的試點與checkpoint機制爭取核准：先小規模驗證轉換率提升幅度，用實際數據而非假設來決定是否擴大投資規模。',
+      followUps: [] },
+    { persona: 'Optical Shop Partner', personaZh: '驗光所窗口',
+      question: '你要提供多少試戴品與訓練資源，才值得我們花時間主動跟顧客推薦你的產品？',
+      referenceAnswer: '基準情境下Trade Marketing（教育訓練＋試戴品）預算約NT$1,500,000；只要通路教育帶來的增量銷量，用Contribution per Unit（約NT$157／盒）累積起來能打平這筆投資，交易就划算——換算約需要9,500多盒的增量銷量，這個門檻其實不低，代表教育投資的效果必須確實可衡量，我會建議用「轉換率提升」而非「陳列曝光」作為驗光所端的合作KPI。',
+      followUps: [] },
+    { persona: 'Regulatory Affairs', personaZh: '法規事務負責人',
+      question: '這是醫療器材，如果法規要求的品保或標示成本上升，你的定價要怎麼反應？',
+      referenceAnswer: '品保與法規成本計入Other Variable Cost（目前假設NT$25／盒），一旦上升會直接壓縮Contribution per Unit——考慮到本案財務結構已經偏薄（Operating Margin僅9.0%），我會優先檢視是否能透過供應鏈規模化來吸收部分成本，而不是立即反映在售價上，因為這個價格帶對消費者的替代品選擇仍然敏感。',
+      followUps: [] },
+  ],
+
+  'fmcg-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'ROMI是負的，代表這筆促銷投資可能划不來，你怎麼說服我這個新品該上市？',
+      referenceAnswer: 'ROMI為負是因為incremental revenue假設已經扣除cannibalization、只占Gross Sales的8%，這是刻意保守的估計。但Break-even只需要約98,528箱（目標的49%），Operating Margin約11.9%，財務結構本身是健康的——問題不在於能不能打平，而在於這些銷量有多少是「真增量」。我會建議上市，但要求上市後第一季用sell-through數據拆分新增消費者與既有產品轉移的比例，作為是否延續促銷深度的checkpoint。',
+      followUps: [] },
+    { persona: 'GM', personaZh: 'GM（台灣總經理）',
+      question: '如果通路要求margin再加5個百分點，你要漲價、縮減促銷深度，還是集中資源在陳列位置好的通路？',
+      referenceAnswer: '我會選擇集中資源在陳列位置好、轉換率高的通路，而不是全面漲價或縮減促銷。FMCG新品上市高度依賴陳列曝光帶動的衝動購買，把促銷資源平均分散到margin要求最高的通路，投資報酬率反而最低；漲價則在新品剛建立市場認知時風險過高，容易直接抑制試用。',
+      followUps: [] },
+    { persona: 'Brand Director', personaZh: '既有主力產品線負責人',
+      question: '這個新口味會不會直接吃掉我現有產品的業績？你怎麼向我證明這是真增量？',
+      referenceAnswer: '目前incrementalRevenue的假設已經刻意保守（僅Gross Sales的8%），代表模型本身已經預留了cannibalization的空間，而不是假設新品銷量100%都是增量。但這個扣除比例本身沒有實際數據驗證，是本案例Missing Information中列為Low confidence的一項——我建議上市初期用不同的消費場景（例如運動情境）做差異化溝通，並用sell-through數據追蹤既有產品線的銷量是否同步下滑來驗證真實的cannibalization程度。',
+      followUps: [] },
+    { persona: 'Retail Buyer', personaZh: '通路採購窗口',
+      question: '你要付多少上架費、保證多少銷量，才值得我們給你端架陳列？',
+      referenceAnswer: '基準情境下Trade Marketing（上架費＋陳列＋促銷）預算約NT$3,500,000，是本案例最大的單一支出項目；只要陳列帶來的增量銷量，用Contribution per Unit（約NT$84／箱）累積起來能打平這筆投資，交易就划算——換算約需要41,000多箱的增量銷量。我會用「可歸因的增量銷量」而非「總出貨量」來設定保證門檻，並優先爭取促銷檔期而非全年常態上架，降低沉沒成本風險。',
+      followUps: [] },
+    { persona: 'Supply Chain', personaZh: '供應鏈負責人',
+      question: '如果原物料成本上升，你的Unit COGS假設還站得住腳嗎？',
+      referenceAnswer: 'Unit COGS（NT$220／箱）是基於現有原料採購價格的估計，飲料類原料成本波動風險中等；如果COGS上升，會直接壓縮Contribution per Unit（目前約NT$84／箱，緩衝本來就不厚），Break-even門檻會明顯拉高。我會建議在正式量產前，跟供應鏈確認至少半年的原料價格鎖定，避免上市後立刻面臨毛利率被侵蝕的風險。',
+      followUps: [] },
+  ],
+
+  'ecom-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'ROMI幾乎打平（1.6%），你怎麼證明調降免運門檻是值得做的？',
+      referenceAnswer: 'ROMI幾乎打平代表這筆行銷投資單靠首年的incremental gross profit幾乎無法自我證明，這也是為什麼我不會只看ROMI——調降免運門檻真正的價值在於新增訂單背後客戶的長期回購價值（LTV），而這正是本案例Missing Information中完全沒有數據的一項。我會建議先用小規模流量做A/B測試，同時追蹤新客戶3–6個月的回購行為，而不是直接把全年預算all-in到這個假設上。',
+      followUps: [] },
+    { persona: 'Growth Lead', personaZh: '成長團隊負責人',
+      question: '如果調降門檻後物流補貼成本超出預期，你要調高門檻、縮減廣告，還是接受更低的單筆獲利？',
+      referenceAnswer: '我會先確認物流補貼上升的幅度是否讓Contribution per Unit轉負——如果只是壓縮但仍為正，可以接受短期較低的單筆獲利去換取訂單量與市佔，因為獲客的長期價值可能透過LTV回收；但如果Contribution per Unit轉負，就必須立即調整，因為那代表每多一筆訂單反而在虧錢，這時應該優先考慮把免運門檻設在一個折衷值，而不是維持最低門檻。',
+      followUps: [] },
+    { persona: 'Platform Partner', personaZh: '第三方平台窗口',
+      question: '你要投入多少站內廣告資源，才能換到平台首頁曝光？',
+      referenceAnswer: '基準情境下Trade Marketing（平台站內廣告資源）預算約NT$800,000；只要曝光帶來的增量訂單，用Contribution per Unit（約NT$280／筆）累積起來能打平這筆投資，交易就划算——換算約需要2,850多筆的增量訂單。我會要求平台提供可歸因的曝光數據，而非只承諾曝光量，避免把本來就會自然發生的訂單算成曝光的功勞。',
+      followUps: [] },
+    { persona: 'Customer Service', personaZh: '客服／物流負責人',
+      question: '免運降低下單門檻，會不會讓退貨率跟著上升？你的成本模型有沒有考慮這個風險？',
+      referenceAnswer: '目前的退貨率假設（8%）是基於現有歷史數據，尚未反映免運政策改變後可能的行為變化——消費者購買前的審慎程度可能因為免運與更低的心理門檻而下降，這正是Missing Information中列為Medium confidence的一項。我建議在正式全面調降門檻前，先用小規模測試觀察退貨率是否明顯上升，再決定是否需要額外的退貨預防機制（例如更清楚的商品說明或試用政策）。',
+      followUps: [] },
+    { persona: 'Regional HQ', personaZh: '區域總部',
+      question: '這個免運補貼的邏輯，跟其他市場比起來效率如何？值得複製嗎？',
+      referenceAnswer: '目前的物流補貼成本（logisticsPerUnit約NT$180／筆）是否具有效率，無法脫離其他市場的benchmark單獨判斷；但更關鍵的是本案例完全沒有計算LTV，如果總部要求跨市場比較，我會建議先統一「獲客成本回收期」（用Contribution per Unit回收Paid Media投入所需的訂單數）作為共通指標，而不是只比較單筆訂單的contribution margin。',
+      followUps: [] },
+  ],
+
+  'saas-001': [
+    { persona: 'CFO', personaZh: 'CFO',
+      question: 'Operating Margin高達55.5%，聽起來很健康，那你為什麼還要問我要不要投資延長試用期？',
+      referenceAnswer: '因為財務結構健康（Break-even僅需目標的24%）不代表這筆投資本身是對的——這份模型只計算了首年新增訂閱的經濟，完全沒有納入churn rate與續約率，而SaaS真正的獲利在於長期續約。如果延長試用期吸引來的是轉換率高但續約率低的「觀望型」客戶，即使首年財務數字亮眼，長期LTV可能反而更差，這才是需要你核准資源去驗證的關鍵問題。',
+      followUps: [] },
+    { persona: 'VP Sales', personaZh: '業務副總',
+      question: '如果Sales Assist的人力成本隨試用期延長而超線性成長，你要怎麼控制？',
+      referenceAnswer: '我不會對所有試用戶提供同等的Sales Assist資源，而是針對「高潛力客戶」（例如試用期間活躍度較高、多席位詢問的帳號）優先提供人工協助，其餘試用戶維持自助式（product-led）流程。這樣可以用較低的邊際成本驗證延長試用期的效果，同時避免Sales Assist人力隨試用客戶數線性甚至超線性成長。',
+      followUps: [] },
+    { persona: 'Customer Success', personaZh: '客戶成功負責人',
+      question: '延長試用期真的會提升轉換率嗎？如果沒有明顯提升，你要怎麼辦？',
+      referenceAnswer: '目前完全沒有A/B測試數據支持「延長試用期會提升轉換率」這個假設，這是本案例最大的不確定性。如果測試結果顯示轉換率沒有明顯提升，我會立即建議縮回14天標準試用期，並把Sales Assist資源轉向已經展現高續約潛力的既有客戶，而不是繼續投入在一個效果不確定的假設上。',
+      followUps: [] },
+    { persona: 'Channel Partner', personaZh: '經銷夥伴窗口',
+      question: '你要給我們多少佣金與銷售支援，才值得我們主動推薦Flowdesk給客戶？',
+      referenceAnswer: '目前的通路／經銷佣金假設為15%，這是B2B SaaS常見的reseller margin水準；只要經銷夥伴帶來的訂閱席位數，用Contribution per Unit（約NT$7,569／席位）累積起來能打平我們投入的銷售支援資源，這筆合作就划算。我會用「可歸因的新增訂閱數」而非「總訂閱數」來設計佣金結構，避免把自然增長的訂閱算成經銷夥伴的功勞。',
+      followUps: [] },
+    { persona: 'Regional HQ', personaZh: '區域總部',
+      question: '這個CAC回收期，跟其他市場的SaaS產品比起來效率如何？',
+      referenceAnswer: 'Break-even僅需約608個新增席位，相對2,500的目標有很大安全邊際，反映SaaS典型的低COGS高毛利結構；但如果總部要求跨市場比較CAC效率，更準確的指標應該是「CAC payback period」（用月為單位，看多少個月的訂閱毛利能回收獲客成本），而不是直接比較Break-even units，因為不同市場的訂閱單價與COGS結構可能不同，需要換算成月數才能公平比較。',
+      followUps: [] },
+  ],
+};
+
+// Portfolio Mode 固定輸出結構（10節）
+const PORTFOLIO_STRUCTURE = [
+  { key: 'businessChallenge', label: '1. Business Challenge' },
+  { key: 'dataAssumptions', label: '2. Data and Assumptions' },
+  { key: 'financialModel', label: '3. Financial Model' },
+  { key: 'strategicOptions', label: '4. Strategic Options' },
+  { key: 'decision', label: '5. Decision' },
+  { key: 'sensitivityAnalysis', label: '6. Sensitivity Analysis' },
+  { key: 'claudeChallenge', label: '7. Claude Challenge' },
+  { key: 'finalRecommendation', label: '8. Final Recommendation' },
+  { key: 'keyLearning', label: '9. Key Learning' },
+  { key: 'transferableApplication', label: '10. Transferable Application' },
+];
+
+// Review Mode 常見錯誤自我檢核清單（用於Dashboard「最常犯的三個錯誤」統計）
+const MISTAKE_TAGS = [
+  'consumer_discount_vs_channel_margin',
+  'roas_treated_as_profit',
+  'romi_used_total_not_incremental_revenue',
+  'fixed_launch_investment_vs_allocated_fixed_cost_confused',
+  'return_rate_ignored',
+  'variable_cost_missing_in_contribution',
+  'rebate_double_counted_with_channel_margin',
+  'no_sensitivity_before_recommendation',
+  'revenue_growth_used_as_proxy_for_profit',
+];
+const MISTAKE_TAG_LABELS = {
+  consumer_discount_vs_channel_margin: '把消費者折扣與通路margin混算',
+  roas_treated_as_profit: '把ROAS當成獲利指標使用',
+  romi_used_total_not_incremental_revenue: 'ROMI用total revenue而非incremental revenue計算',
+  fixed_launch_investment_vs_allocated_fixed_cost_confused: '混用Fixed Launch Investment與Allocated Fixed Cost',
+  return_rate_ignored: '忽略退貨率對淨銷售的影響',
+  variable_cost_missing_in_contribution: '計算Contribution Profit時漏算Variable Operating Cost',
+  rebate_double_counted_with_channel_margin: 'Rebate與Channel Margin重複計算',
+  no_sensitivity_before_recommendation: '未做敏感度分析就提出建議',
+  revenue_growth_used_as_proxy_for_profit: '把營收成長當成利潤成長的證據',
+};
+
+// Model Mode：每個可調整欄位都建議使用者填寫的四個提示
+const ASSUMPTION_PROMPT_FIELDS = [
+  { key: 'rationale', label: '數字來源／假設邏輯' },
+  { key: 'risk', label: '風險' },
+  { key: 'confidence', label: 'Confidence Level', type: 'select', options: ['High', 'Medium', 'Low'] },
+];
+
+/* =========================================================================
+ * Business Decision Lab — App Controller / Renderer
+ * 純前端 vanilla JS，無框架、無建置流程，方便直接以靜態網站部署。
+ * ========================================================================= */
+
+const App = (() => {
+  const root = () => document.getElementById('appRoot');
+
+  // ---------------------------------------------------------------- utils
+  const fmt = (n) => Math.round(n || 0).toLocaleString('zh-Hant-TW');
+  const fmtMoney = (n) => 'NT$' + fmt(n);
+  const fmtPct = (n, d = 1) => (isFinite(n) ? (n * 100).toFixed(d) : '0.0') + '%';
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fieldGroups = ['定價與銷量', '通路經濟', '成本結構', 'A&P投資', '通路投資', '固定投資', '行銷效率（ROAS／ROMI）'];
+
+  // ------------------------------------------------ 手機Q&A填答優化（2026-08）
+  // 修正1：textarea自動隨內容增高，不再需要在小框框內部另外捲動查看已填答案。
+  function autoGrowTextarea(el) {
+    if (!el || el.tagName !== 'TEXTAREA') return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+  function autoGrowAllTextareas(container) {
+    (container || document).querySelectorAll('textarea').forEach(autoGrowTextarea);
+  }
+  // 修正3：Coach區（Challenge／Model等）送出答案後會整塊重新繪製，
+  // 如果不處理，畫面會跳回目前這個區塊的最上方，容易讓人誤以為「答案不見了」。
+  // 這裡先記住重繪前的捲動位置，重繪完再還原，畫面留在原地。
+  function preserveScroll(renderFn) {
+    const y = window.scrollY;
+    renderFn();
+    window.scrollTo(0, y);
+  }
+
+  // ---------------------------------------------------------------- router
+  function parseHash() {
+    const h = (location.hash || '#dashboard').slice(1);
+    const [route, param] = h.split('/');
+    return { route: route || 'dashboard', param };
+  }
+  function navigate(route, param) {
+    location.hash = param ? `${route}/${param}` : route;
+  }
+  function onHashChange() { render(); }
+
+  function render() {
+    const { route, param } = parseHash();
+    document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.route === route));
+    updateSaveIndicator();
+    if (route === 'dashboard') return renderDashboard();
+    if (route === 'library') return renderLibrary();
+    if (route === 'workspace') return renderWorkspaceEntry(param);
+    if (route === 'progress') return renderProgress();
+    if (route === 'portfolio') return renderPortfolio();
+    if (route === 'data') return renderDataPanel();
+    root().innerHTML = '<div class="card">找不到頁面。</div>';
+  }
+
+  function updateSaveIndicator() {
+    const el = document.getElementById('saveIndicator');
+    if (!el) return;
+    const last = DataStore.get().lastSaved;
+    el.textContent = last ? `已儲存於本機 · ${new Date(last).toLocaleString('zh-Hant-TW')}` : '尚未儲存任何紀錄';
+  }
+
+  // ============================================================ DASHBOARD
+  function monthKey(d) { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`; }
+  function average(arr) { const a = arr.filter((x) => typeof x === 'number' && isFinite(x)); return a.length ? a.reduce((s, x) => s + x, 0) / a.length : null; }
+
+  function dashboardStats() {
+    const sessions = DataStore.get().sessions;
+    const now = new Date();
+    const thisMK = monthKey(now);
+    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevMK = monthKey(prevDate);
+    const thisMonthSessions = sessions.filter((s) => monthKey(s.date) === thisMK);
+    const prevMonthSessions = sessions.filter((s) => monthKey(s.date) === prevMK);
+    const thisAvg = average(thisMonthSessions.map((s) => s.finalScore?.total));
+    const prevAvg = average(prevMonthSessions.map((s) => s.finalScore?.total));
+    const overallAvg = average(sessions.map((s) => s.finalScore?.total));
+    const lastSession = sessions[sessions.length - 1] || null;
+    const mistakeCounts = {};
+    sessions.forEach((s) => (s.mistakeTags || []).forEach((t) => (mistakeCounts[t] = (mistakeCounts[t] || 0) + 1)));
+    const topMistakes = Object.entries(mistakeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const attempted = new Set(sessions.map((s) => s.caseId));
+    const nextCase = CASES.find((c) => !c.comingSoon && !attempted.has(c.id));
+    return { completedThisMonth: thisMonthSessions.length, overallAvg, thisAvg, prevAvg, lastSession, topMistakes, nextCase, totalSessions: sessions.length };
+  }
+
+  function renderDashboard() {
+    const st = dashboardStats();
+    const delta = (st.thisAvg != null && st.prevAvg != null) ? st.thisAvg - st.prevAvg : null;
+    root().innerHTML = `
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-desc">跨產業行銷P&amp;L決策分析 — 你的商業判斷訓練總覽</p>
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="v">${st.completedThisMonth}</div><div class="l">本月完成案例次數</div></div>
+        <div class="kpi-tile alt"><div class="v">${st.overallAvg != null ? st.overallAvg.toFixed(1) : '—'}</div><div class="l">歷史平均分數（Final Score）</div></div>
+        <div class="kpi-tile ${delta == null ? 'alt' : delta >= 0 ? 'pos' : 'neg'}"><div class="v">${delta == null ? '—' : (delta >= 0 ? '+' : '') + delta.toFixed(1)}</div><div class="l">本月 vs 上月 分數變化</div></div>
+        <div class="kpi-tile alt"><div class="v">${st.totalSessions}</div><div class="l">累計練習Session數</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>最近一次練習</h3>
+          ${st.lastSession ? `
+            <p><b>${esc(getCaseById(st.lastSession.caseId)?.title || st.lastSession.caseId)}</b><br/>
+            <span class="muted small">${new Date(st.lastSession.date).toLocaleString('zh-Hant-TW')} · Final Score ${st.lastSession.finalScore?.total ?? '—'}</span></p>
+            <button class="btn secondary small" onclick="App.navigate('progress')">查看完整紀錄</button>
+          ` : `<p class="muted">尚未完成任何練習。從下方建議案例開始你的第一次練習。</p>`}
+        </div>
+        <div class="card">
+          <h3>建議下一個Case</h3>
+          ${st.nextCase ? `
+            <p><b>${esc(st.nextCase.title)}</b><br/><span class="muted small">${esc(getIndustry(st.nextCase.industry)?.labelZh || '')} · ${esc(st.nextCase.mainSkill)}</span></p>
+            <button class="btn small" onclick="App.navigate('workspace','${st.nextCase.id}')">開始練習</button>
+          ` : `<p class="muted">目前公開的完整案例已全部練習過，請留意後續新增的產業案例。</p>`}
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>最常犯的三個錯誤</h3>
+        ${st.topMistakes.length ? `
+          <ol>${st.topMistakes.map(([tag, count]) => `<li>${esc(MISTAKE_TAG_LABELS[tag] || tag)} <span class="muted small">（出現 ${count} 次）</span></li>`).join('')}</ol>
+        ` : `<p class="muted">尚無足夠資料，完成Review Mode評分後會自動累積統計。</p>`}
+      </div>
+
+      <div class="card">
+        <h3>六大產業分類</h3>
+        <div class="grid grid-4">
+          ${INDUSTRIES.map((ind) => {
+            const cs = getCasesByIndustry(ind.id);
+            const full = cs.filter((c) => !c.comingSoon).length;
+            return `<div class="case-card">
+              <div class="industry">${esc(ind.label)}</div>
+              <div class="title" style="font-size:13px;">${esc(ind.labelZh)}</div>
+              <div class="skills">${cs.length} 個案例（${full} 個已開放）</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // ============================================================ LIBRARY
+  let libraryFilters = { industry: 'all', difficulty: 'all', status: 'all', origin: 'all' };
+
+  function renderLibrary() {
+    const industries = ['all', ...INDUSTRIES.map((i) => i.id)];
+    const difficulties = ['all', ...Array.from(new Set(CASES.map((c) => c.difficulty)))];
+    let list = CASES.filter((c) => {
+      if (libraryFilters.industry !== 'all' && c.industry !== libraryFilters.industry) return false;
+      if (libraryFilters.difficulty !== 'all' && c.difficulty !== libraryFilters.difficulty) return false;
+      if (libraryFilters.status !== 'all' && (c.status || 'Private') !== libraryFilters.status) return false;
+      if (libraryFilters.origin !== 'all' && c.origin !== libraryFilters.origin) return false;
+      return true;
+    });
+    const sessions = DataStore.get().sessions;
+
+    root().innerHTML = `
+      <h1 class="page-title">Case Library</h1>
+      <p class="page-desc">跨六大產業的Business Case練習庫</p>
+      <div class="filter-bar">
+        <select onchange="App.setLibraryFilter('industry', this.value)">
+          ${industries.map((i) => `<option value="${i}" ${libraryFilters.industry === i ? 'selected' : ''}>${i === 'all' ? '全部產業' : esc(getIndustry(i)?.labelZh)}</option>`).join('')}
+        </select>
+        <select onchange="App.setLibraryFilter('difficulty', this.value)">
+          ${difficulties.map((d) => `<option value="${d}" ${libraryFilters.difficulty === d ? 'selected' : ''}>${d === 'all' ? '全部難度' : esc(d)}</option>`).join('')}
+        </select>
+        <select onchange="App.setLibraryFilter('status', this.value)">
+          <option value="all" ${libraryFilters.status === 'all' ? 'selected' : ''}>Public／Private 全部</option>
+          <option value="Public" ${libraryFilters.status === 'Public' ? 'selected' : ''}>Public</option>
+          <option value="Private" ${libraryFilters.status === 'Private' ? 'selected' : ''}>Private</option>
+        </select>
+        <select onchange="App.setLibraryFilter('origin', this.value)">
+          <option value="all" ${libraryFilters.origin === 'all' ? 'selected' : ''}>HBP-inspired／Original 全部</option>
+          <option value="Original" ${libraryFilters.origin === 'Original' ? 'selected' : ''}>Original</option>
+          <option value="HBP-inspired" ${libraryFilters.origin === 'HBP-inspired' ? 'selected' : ''}>HBP-inspired</option>
+        </select>
+      </div>
+      <div class="grid grid-4">
+        ${list.map((c) => {
+          const done = sessions.some((s) => s.caseId === c.id);
+          if (c.comingSoon) {
+            return `<div class="case-card" style="opacity:0.6;">
+              <div class="industry">${esc(getIndustry(c.industry)?.label)}</div>
+              <div class="title">${esc(c.title)}</div>
+              <div class="skills">${esc(c.mainSkill)}</div>
+              <div class="badges"><span class="badge locked">尚未開放</span></div>
+            </div>`;
+          }
+          return `<div class="case-card" style="cursor:pointer;" onclick="App.navigate('workspace','${c.id}')">
+            <div class="industry">${esc(getIndustry(c.industry)?.label)}</div>
+            <div class="title">${esc(c.title)}</div>
+            ${c.titleEn ? `<div class="small muted" style="font-style:italic;margin-top:-4px;">${esc(c.titleEn)}</div>` : ''}
+            <div class="skills">${esc(c.mainSkill)}</div>
+            <div class="badges">
+              <span class="badge">${esc(c.difficulty)}</span>
+              <span class="badge">${esc(c.status)}</span>
+              <span class="badge">${esc(c.origin)}</span>
+              ${done ? '<span class="badge" style="color:#1f6f43;border-color:#1f6f43;">已練習過</span>' : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+  function setLibraryFilter(k, v) { libraryFilters[k] = v; renderLibrary(); }
+
+  // ============================================================ WORKSPACE
+  let WS = null;
+
+  function defaultWorkspace(c) {
+    const inputs = {};
+    c.financialInputs.fields.forEach((f) => (inputs[f.key] = f.default));
+    return {
+      caseId: c.id, scenarioKey: 'base', inputs,
+      coachMode: 'case',
+      initialDecisionText: '', initialScoreEstimate: '',
+      initialSnapshot: null,
+      challengeAnswers: [],
+      decisionAnswers: {},
+      corrections: '',
+      finalDecision: '',
+      rubric: {}, mistakeTags: [],
+      confidenceBefore: 5, confidenceAfter: 5,
+      skillsDemonstrated: '', skillsToImprove: '', blindSpot: '', transferableLesson: '',
+    };
+  }
+  function persistWS() { DataStore.saveDraft(WS.caseId, WS); updateSaveIndicator(); }
+
+  function renderWorkspaceEntry(caseId) {
+    const c = getCaseById(caseId);
+    if (!c) { root().innerHTML = '<div class="card">找不到這個案例。</div>'; return; }
+    if (c.comingSoon) {
+      root().innerHTML = `
+        <button class="btn secondary small" onclick="App.navigate('library')">← 返回Case Library</button>
+        <div class="card locked-panel" style="margin-top:14px;">
+          <h3 style="border:none;">${esc(c.title)}</h3>
+          <p class="muted">Industry：${esc(getIndustry(c.industry)?.labelZh)} ／ Main skill：${esc(c.mainSkill)}</p>
+          <p>此產業案例目前僅建立Case Identity骨架，尚未完成完整B–F區塊與財務引擎欄位。<br/>
+          下一輪迭代將依照與「高階掃拖機器人台灣上市決策」相同的標準（Business Background、Management Decision、Financial Inputs、Missing Information、Decision Questions、三種情境）逐一補完。</p>
+        </div>`;
+      return;
+    }
+    const draft = DataStore.getDraft(caseId);
+    WS = draft && draft.caseId === caseId ? draft : defaultWorkspace(c);
+    renderWorkspaceFull();
+  }
+
+  function renderWorkspaceFull() {
+    const c = getCaseById(WS.caseId);
+    root().innerHTML = `
+      <button class="btn secondary small" onclick="App.navigate('library')">← 返回Case Library</button>
+      <div class="flex-between" style="margin-top:10px;">
+        <div>
+          <h1 class="page-title" style="margin-bottom:2px;">${esc(c.title)}</h1>
+          ${c.titleEn ? `<p class="small muted" style="margin:0 0 4px;font-style:italic;">${esc(c.titleEn)}</p>` : ''}
+          <p class="page-desc" style="margin-bottom:0;">${esc(getIndustry(c.industry)?.labelZh)}（${esc(getIndustry(c.industry)?.label)}） · ${esc(c.mainSkill)} · ${esc(c.difficulty)} · ${esc(c.version)}</p>
+        </div>
+      </div>
+      <div class="disclosure">${esc(c.originNote || '')}</div>
+
+      <div class="grid grid-3">
+        <div id="wsLeft"></div>
+        <div id="wsCenter"></div>
+        <div id="wsRight"></div>
+      </div>
+    `;
+    renderWorkspaceLeft(c);
+    renderWorkspaceCenter(c);
+    renderWorkspaceRight(c);
+  }
+
+  function renderWorkspaceLeft(c) {
+    const b = c.background;
+    document.getElementById('wsLeft').innerHTML = `
+      <div class="card">
+        <h3>Case Brief</h3>
+        <h4>Company Profile</h4><p class="small">${esc(b.companyProfile)}</p>
+        <h4>Product / Service</h4><p class="small">${esc(b.productService)}</p>
+        <h4>Market Situation</h4><p class="small">${esc(b.marketSituation)}</p>
+        <h4>Customer</h4><p class="small">${esc(b.customer)}</p>
+        <h4>Competitors</h4><p class="small">${esc(b.competitors)}</p>
+        <h4>Channel Structure</h4><p class="small">${esc(b.channelStructure)}</p>
+        <h4>Strategic Challenge</h4><p class="small">${esc(b.strategicChallenge)}</p>
+      </div>
+      <div class="card">
+        <h3>Management Decision</h3>
+        <p class="small"><b>${esc(c.managementDecision)}</b></p>
+        <ul class="small">${c.decisionSubQuestions.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
+      </div>
+      <div class="card">
+        <h3>Missing Information</h3>
+        ${c.missingInformation.map((m) => `
+          <div style="margin-bottom:8px;">
+            <div class="small"><b>${esc(m.item)}</b></div>
+            <div class="small muted">${esc(m.why)}</div>
+            <div class="small confidence-badge ${m.confidence}">建議Confidence：${m.confidence}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <h3>Sources</h3>
+        ${c.sources.map((s) => `
+          <div class="source-box">
+            <div><span class="tag ${s.tag}">${s.tag === 'public' ? 'Publicly sourced' : s.tag === 'case' ? 'Case-provided' : s.tag === 'user' ? 'User input' : 'Claude assumption'}</span></div>
+            <div style="margin-top:4px;">${esc(s.title)}${s.publisher ? ' — ' + esc(s.publisher) : ''}</div>
+            ${s.url ? `<div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></div>` : ''}
+            <div class="muted">${s.pubDate ? 'Published: ' + esc(s.pubDate) + ' · ' : ''}Accessed: ${esc(s.accessDate)}</div>
+            <div style="margin-top:2px;">${esc(s.dataPoint)}</div>
+          </div>`).join('')}
+      </div>
+    `;
+  }
+
+  function tagLabel(t) { return { case: 'Case-provided', assumption: 'Claude assumption', user: 'User input', public: 'Publicly sourced' }[t] || t; }
+
+  function renderWorkspaceCenter(c) {
+    const pnl = Engine.computePnL(WS.inputs);
+    document.getElementById('wsCenter').innerHTML = `
+      <div class="card">
+        <h3>Scenario</h3>
+        <div class="scenario-pills">
+          ${['conservative', 'base', 'aggressive'].map((k) => {
+            const sc = c.scenarios[k];
+            return `<button class="scenario-pill ${WS.scenarioKey === k ? 'active' : ''}" onclick="App.applyScenario('${k}')">${esc(sc.labelZh)}</button>`;
+          }).join('')}
+          <span class="scenario-pill status ${WS.scenarioKey === 'custom' ? 'active' : ''}">自訂 Custom</span>
+        </div>
+        <p class="small muted">${WS.scenarioKey === 'custom'
+          ? '你已手動調整下方任一數值，目前為自訂情境（不需要另外點選「自訂」——直接修改數字就會自動切換到這裡）。'
+          : esc(c.scenarios[WS.scenarioKey]?.desc || '')}</p>
+      </div>
+
+      <div class="card">
+        <h3>Financial Inputs</h3>
+        <p class="small muted">下方即時P&amp;L結果中，每個項目名稱旁的圓圈問號都可以點開，查看計算方式、商業意義與常見錯誤。</p>
+        ${fieldGroups.map((g) => {
+          const fields = c.financialInputs.fields.filter((f) => f.group === g);
+          if (!fields.length) return '';
+          return `<h4>${esc(g)}</h4>${fields.map((f) => `
+            <div class="field">
+              <label>${esc(f.label)} <span class="tag ${f.tag}">${tagLabel(f.tag)}</span></label>
+              <input type="number" step="any" value="${esc(WS.inputs[f.key])}" oninput="App.onInputChange('${f.key}', this.value)" />
+              <div class="note">單位：${esc(f.unit)}　${esc(f.note)}</div>
+            </div>`).join('')}`;
+        }).join('')}
+      </div>
+
+      <div id="pnlOutput"></div>
+
+      <div class="card">
+        <h3>Decision Questions</h3>
+        <p class="small muted">建議先寫下你自己的答案，再點「顯示參考答案」比較差異——參考答案是Base情境下的示範作答，不是唯一標準答案。</p>
+        ${c.decisionQuestions.map((q, i) => `
+          <div class="field">
+            <label>${i + 1}. ${esc(q)}</label>
+            <textarea onchange="App.onDecisionAnswerChange(${i}, this.value)">${esc(WS.decisionAnswers[i] || '')}</textarea>
+            ${c.referenceAnswers && c.referenceAnswers[i] ? `
+              <button type="button" class="btn secondary small" style="margin-top:6px;" onclick="App.toggleRefAnswer('dq-ref-${i}')">顯示參考答案</button>
+              <div id="dq-ref-${i}" class="ref-answer" hidden>
+                <div class="ref-answer-label">Claude參考答案（示範，非唯一標準答案）</div>
+                <p>${esc(c.referenceAnswers[i])}</p>
+              </div>` : ''}
+          </div>`).join('')}
+      </div>
+    `;
+    renderPnlOutputs(pnl, c);
+  }
+
+  // 每個P&L項目旁的 (?) — 點開顯示該公式的計算方式／定義／商業意義／常見錯誤
+  function plRow(label, glossaryName, valueHtml, opts) {
+    opts = opts || {};
+    const g = Engine.FORMULA_GLOSSARY.find((x) => x.name === glossaryName);
+    const qm = g ? `<button type="button" class="qmark" onclick="App.toggleFormulaInfo(this)" aria-label="查看計算方式">?</button>` : '';
+    const valClass = 'val' + (opts.negative ? ' negative' : '');
+    const infoHtml = g ? `<tr class="formula-info"><td colspan="2"><div class="formula-detail">
+        <div class="row"><b>計算方式：</b>${esc(g.formula)}</div>
+        <div class="row"><b>定義：</b>${esc(g.definition)}</div>
+        <div class="row"><b>商業意義：</b>${esc(g.meaning)}</div>
+        <div class="row"><b>常見錯誤：</b>${esc(g.mistake)}</div>
+        <div class="row"><b>適用產業：</b>${esc(g.industry)}</div>
+      </div></td></tr>` : '';
+    return `<tr class="${opts.trClass || ''}"><td>${esc(label)}${qm}</td><td class="${valClass}">${valueHtml}</td></tr>${infoHtml}`;
+  }
+  function toggleFormulaInfo(btn) {
+    const row = btn.closest('tr');
+    const info = row && row.nextElementSibling;
+    if (info && info.classList.contains('formula-info')) info.classList.toggle('open');
+  }
+
+  function renderPnlOutputs(pnl, c) {
+    const sens = Engine.sensitivityAnalysis(WS.inputs);
+    const thresholds = computeThresholds();
+    const opClass = pnl.operatingProfit >= 0 ? 'pos' : 'neg';
+    document.getElementById('pnlOutput').innerHTML = `
+      <div class="card">
+        <h3>即時 P&amp;L 結果</h3>
+        <div class="kpi-row">
+          <div class="kpi-tile alt"><div class="v">${fmtMoney(pnl.companyNetRevenue)}</div><div class="l">Company Net Revenue</div></div>
+          <div class="kpi-tile alt"><div class="v">${fmtMoney(pnl.grossProfit)}</div><div class="l">Gross Profit（${fmtPct(pnl.grossMarginPct)}）</div></div>
+          <div class="kpi-tile ${opClass}"><div class="v">${fmtMoney(pnl.operatingProfit)}</div><div class="l">Operating Profit（${fmtPct(pnl.operatingMarginPct)}）</div></div>
+          <div class="kpi-tile alt"><div class="v">${isFinite(pnl.breakEvenUnits) ? fmt(pnl.breakEvenUnits) + ' 台' : '無法回本'}</div><div class="l">Break-even Units</div></div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>P&amp;L 項目（點 ? 查看計算方式）</th><th>金額</th></tr></thead>
+            <tbody>
+              ${plRow('Gross Sales', 'Gross Sales', fmtMoney(pnl.grossSales))}
+              ${plRow('(-) Consumer Discount', 'Consumer Discount', '-' + fmtMoney(pnl.consumerDiscount), { negative: true })}
+              ${plRow('(-) Returns', 'Returns', '-' + fmtMoney(pnl.returns), { negative: true })}
+              ${plRow('= Net Consumer Sales', 'Net Consumer Sales', fmtMoney(pnl.netConsumerSales), { trClass: 'subtotal' })}
+              ${plRow('(-) Channel Margin', 'Channel Margin', '-' + fmtMoney(pnl.channelMargin), { negative: true })}
+              ${plRow('(-) Rebates', 'Rebates', '-' + fmtMoney(pnl.rebates), { negative: true })}
+              ${plRow('= Company Net Revenue', 'Company Net Revenue', fmtMoney(pnl.companyNetRevenue), { trClass: 'subtotal' })}
+              ${plRow('(-) COGS', 'COGS', '-' + fmtMoney(pnl.cogs), { negative: true })}
+              ${plRow(`= Gross Profit（Gross Margin ${fmtPct(pnl.grossMarginPct)}）`, 'Gross Profit / Gross Margin %', fmtMoney(pnl.grossProfit), { trClass: 'subtotal' })}
+              ${plRow('(-) Total A&P', 'Total A&P', '-' + fmtMoney(pnl.totalAP), { negative: true })}
+              ${plRow('(-) Trade Marketing', 'Trade Marketing', '-' + fmtMoney(pnl.tradeMarketing), { negative: true })}
+              ${plRow('(-) Variable Operating Cost', 'Variable Operating Cost', '-' + fmtMoney(pnl.variableOperatingCost), { negative: true })}
+              ${plRow('= Contribution Profit', 'Contribution Profit', fmtMoney(pnl.contributionProfit), { trClass: 'subtotal' })}
+              ${plRow('(-) Allocated Fixed Cost', 'Allocated Fixed Cost', '-' + fmtMoney(pnl.allocatedFixedCost), { negative: true })}
+              ${plRow(`= Operating Profit（Operating Margin ${fmtPct(pnl.operatingMarginPct)}）`, 'Operating Profit / Operating Margin %', fmtMoney(pnl.operatingProfit), { trClass: 'final' })}
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Break-even &amp; 單位經濟</h4>
+        <div class="table-wrap"><table><tbody>
+          ${plRow('Contribution per Unit', 'Contribution per Unit', fmtMoney(pnl.contributionPerUnit))}
+          ${plRow('Fixed Launch Investment（一次性上市投資）', 'Break-even Units', fmtMoney(pnl.fixedLaunchInvestment))}
+          ${plRow('Break-even Units', 'Break-even Units', isFinite(pnl.breakEvenUnits) ? fmt(pnl.breakEvenUnits) + ' 台' : '此單位經濟無法回本')}
+          ${plRow('A&P as % of Revenue', 'A&P as % of Revenue', fmtPct(pnl.apPctOfRevenue))}
+        </tbody></table></div>
+
+        <h4>行銷效率（獨立假設，非核心P&amp;L）</h4>
+        <div class="table-wrap"><table><tbody>
+          ${plRow('ROAS = Attributed Revenue ÷ Paid Media', 'ROAS', pnl.roas.toFixed(2) + 'x')}
+          ${plRow('Incremental Gross Profit', 'Incremental Gross Profit', fmtMoney(pnl.incrementalGrossProfit))}
+          ${plRow('ROMI', 'ROMI', fmtPct(pnl.romi))}
+        </tbody></table></div>
+        <p class="small muted">⚠️ ROAS高不代表獲利高：ROAS只計算歸因營收、未扣成本；判斷A&amp;P是否合理請以ROMI（用incremental gross profit）為準。</p>
+      </div>
+
+      <div class="card">
+        <h3>Sensitivity Analysis</h3>
+        <p class="small muted">最影響 Operating Profit 的三個變數（±10% 變動的影響金額，由大到小排序）：</p>
+        ${sens.top3.map((r) => {
+          const v10 = r.impacts[0.10], vNeg10 = r.impacts[-0.10];
+          const maxAbs = Math.max(Math.abs(v10), Math.abs(vNeg10), 1);
+          const widthPos = Math.min(100, Math.abs(v10) / sens.maxSwing * 100);
+          return `<div class="sens-row">
+            <div class="sens-label">${esc(r.label)}</div>
+            <div class="sens-track"><div class="sens-bar ${v10 < 0 ? 'neg' : ''}" style="left:50%;width:${widthPos / 2}%;"></div></div>
+            <div class="sens-val">+10%: ${v10 >= 0 ? '+' : ''}${fmtMoney(v10)}</div>
+          </div>`;
+        }).join('')}
+        <div class="table-wrap" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>變數</th><th>-10%</th><th>-5%</th><th>-1%</th><th>+1%</th><th>+5%</th><th>+10%</th></tr></thead>
+            <tbody>
+              ${sens.rows.map((r) => `<tr><td>${esc(r.label)}</td>${[-0.10, -0.05, -0.01, 0.01, 0.05, 0.10].map((s) => `<td class="val ${r.impacts[s] < 0 ? 'negative' : ''}">${r.impacts[s] >= 0 ? '+' : ''}${fmtMoney(r.impacts[s])}</td>`).join('')}</tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <h4>決策失效門檻（Break-point）</h4>
+        <ul class="small">
+          ${thresholds.map((t) => `<li>${t.text}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  function computeThresholds() {
+    const inputs = WS.inputs;
+    const out = [];
+    const cmr = Engine.solveThreshold(inputs, 'channelMarginRate', 0, 95);
+    out.push({ text: cmr != null ? `若 <b>通路Margin</b> 超過 <b>${cmr.toFixed(1)}%</b>（目前 ${inputs.channelMarginRate}%），Operating Profit 將歸零，原上市決策不再成立。` : '在 0–95% 範圍內，通路Margin未使Operating Profit歸零，決策對此變數相對穩健。' });
+    const lp = Engine.solveThreshold(inputs, 'listPrice', Number(inputs.listPrice) * 0.4, Number(inputs.listPrice) * 1.3);
+    out.push({ text: lp != null ? `若 <b>售價</b> 低於 <b>${fmtMoney(lp)}</b>（目前 ${fmtMoney(inputs.listPrice)}），Operating Profit 將轉為虧損。` : '在合理售價區間內，售價下修未使Operating Profit歸零。' });
+    const dr = Engine.solveThreshold(inputs, 'discountRate', 0, 70);
+    out.push({ text: dr != null ? `若 <b>消費者折扣</b> 超過 <b>${dr.toFixed(1)}%</b>（目前 ${inputs.discountRate}%），Operating Profit 將歸零。` : '在 0–70% 範圍內，折扣加深未使Operating Profit歸零。' });
+    const un = Engine.solveThreshold(inputs, 'units', 100, Number(inputs.units) * 5 || 50000);
+    out.push({ text: un != null ? `銷量低於 <b>${fmt(un)} 台</b> 時，Operating Profit 將轉為虧損（即Break-even附近）。` : '在測試範圍內未找到銷量門檻，請檢查Contribution per Unit是否為正。' });
+    return out;
+  }
+
+  function onInputChange(key, value) {
+    WS.inputs[key] = value;
+    WS.scenarioKey = 'custom';
+    persistWS();
+    document.querySelectorAll('.scenario-pill').forEach((b) => b.classList.remove('active'));
+    const pnl = Engine.computePnL(WS.inputs);
+    const c = getCaseById(WS.caseId);
+    renderPnlOutputs(pnl, c);
+  }
+  function applyScenario(key) {
+    const c = getCaseById(WS.caseId);
+    const defaults = {};
+    c.financialInputs.fields.forEach((f) => (defaults[f.key] = f.default));
+    WS.inputs = { ...defaults, ...(c.scenarios[key].overrides || {}) };
+    WS.scenarioKey = key;
+    persistWS();
+    renderWorkspaceCenter(c);
+  }
+  function onDecisionAnswerChange(i, v) { WS.decisionAnswers[i] = v; persistWS(); }
+
+  // -------------------------------------------------------- Coach Panel
+  function renderWorkspaceRight(c) {
+    document.getElementById('wsRight').innerHTML = `
+      <div class="card">
+        <h3>Claude Coach</h3>
+        <div class="coach-mode-tabs">
+          ${['case', 'model', 'challenge', 'review', 'portfolio'].map((m) => `<button class="${WS.coachMode === m ? 'active' : ''}" onclick="App.setCoachMode('${m}')">${m === 'case' ? 'Case' : m === 'model' ? 'Model' : m === 'challenge' ? 'Challenge' : m === 'review' ? 'Review' : 'Portfolio'}</button>`).join('')}
+        </div>
+        <div id="coachBody"></div>
+      </div>
+    `;
+    renderCoachBody(c);
+  }
+  function setCoachMode(m) { WS.coachMode = m; persistWS(); document.querySelectorAll('.coach-mode-tabs button').forEach((b) => b.classList.remove('active')); renderWorkspaceRight(getCaseById(WS.caseId)); }
+
+  function renderCoachBody(c) {
+    const box = document.getElementById('coachBody');
+    if (WS.coachMode === 'case') {
+      box.innerHTML = `<div class="mode-intro">${esc(MODE_INTRO.case)}</div>
+        <p class="small">提醒：本模式刻意不顯示建議答案，請先完整閱讀左側Case Brief與Missing Information。</p>`;
+      return;
+    }
+    if (WS.coachMode === 'model') {
+      const log = DataStore.getAssumptionLog(c.id);
+      box.innerHTML = `<div class="mode-intro">${esc(MODE_INTRO.model)}</div>
+        <div class="field"><label>你的初步決策 Initial Decision</label>
+          <textarea onchange="App.onInitialDecisionChange(this.value)">${esc(WS.initialDecisionText)}</textarea></div>
+        <div class="field"><label>初步自評總分（選填，0–100，作為Initial Score）</label>
+          <input type="number" min="0" max="100" value="${esc(WS.initialScoreEstimate)}" oninput="App.onInitialScoreChange(this.value)" /></div>
+        <button class="btn small" onclick="App.snapshotInitial()">鎖定為期初結果 (Initial Snapshot)</button>
+        ${WS.initialSnapshot ? `<p class="small muted">已鎖定：${new Date(WS.initialSnapshot.timestamp).toLocaleString('zh-Hant-TW')} · Operating Profit ${fmtMoney(WS.initialSnapshot.pnl.operatingProfit)}</p>` : ''}
+        <hr class="sep"/>
+        <h4>Assumption Log</h4>
+        <div class="field"><label>新增假設紀錄</label>
+          <textarea id="assumeText" placeholder="你調整了什麼數字？來源／邏輯是什麼？"></textarea></div>
+        <div class="field"><label>Confidence Level</label>
+          <select id="assumeConf"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+        <button class="btn small" onclick="App.addAssumptionEntry()">新增紀錄</button>
+        <div style="margin-top:10px;">
+          ${log.map((a) => `<div class="assumption-entry"><b class="confidence-badge ${a.confidence}">[${a.confidence}]</b> ${esc(a.text)}<div class="muted small">${new Date(a.ts).toLocaleString('zh-Hant-TW')}</div></div>`).join('') || '<p class="muted small">尚無紀錄。</p>'}
+        </div>`;
+      return;
+    }
+    if (WS.coachMode === 'challenge') {
+      const queue = getChallengeQueue(c.id);
+      const answeredCount = WS.challengeAnswers.length;
+      const current = queue[answeredCount];
+      const lastAnswered = WS.challengeAnswers[answeredCount - 1];
+      box.innerHTML = `<div class="mode-intro">${esc(MODE_INTRO.challenge)}</div>
+        ${lastAnswered && lastAnswered.referenceAnswer ? `
+          <div class="field">
+            <button type="button" class="btn secondary small" onclick="App.toggleRefAnswer('challenge-ref')">顯示Claude參考回答</button>
+            <div id="challenge-ref" class="ref-answer" hidden>
+              <div class="ref-answer-label">Claude參考回答（示範，非唯一標準答案）</div>
+              <p>${esc(lastAnswered.referenceAnswer)}</p>
+            </div>
+          </div>` : ''}
+        ${current ? `
+          <div class="challenge-card">
+            <div class="persona">${esc(current.personaZh)}${current.isMain ? '' : ' · 追問'}</div>
+            <div class="q">${esc(current.question)}</div>
+            <textarea id="challengeAnswerBox" placeholder="輸入你的回答..."></textarea>
+            <button class="btn small" style="margin-top:6px;" onclick="App.answerChallenge()">回答並記錄</button>
+          </div>` : `<p class="small muted">此案例的Challenge問題已全部回答完畢。</p>`}
+        <h4>已回答紀錄</h4>
+        ${WS.challengeAnswers.length ? WS.challengeAnswers.map((a) => `<div class="challenge-card"><div class="persona">${esc(a.personaZh)}${a.isMain ? '' : ' · 追問'}</div><div class="q small">${esc(a.question)}</div><div class="small">→ ${esc(a.answer)}</div></div>`).join('') : '<p class="muted small">尚無紀錄。</p>'}
+        <div class="field"><label>挑戰後你修正了哪些假設或數字？（Corrections）</label>
+          <textarea onchange="App.onCorrectionsChange(this.value)">${esc(WS.corrections)}</textarea></div>`;
+      return;
+    }
+    if (WS.coachMode === 'review') {
+      box.innerHTML = renderReviewMode(c);
+      return;
+    }
+    if (WS.coachMode === 'portfolio') {
+      box.innerHTML = `<div class="mode-intro">${esc(MODE_INTRO.portfolio)}</div>
+        <p class="small">完成Review Mode並存檔後，此Session會出現在 <a href="#" onclick="App.navigate('portfolio');return false;">Portfolio</a> 頁面，可再切換去識別化與Index呈現。</p>`;
+      return;
+    }
+  }
+
+  function onInitialDecisionChange(v) { WS.initialDecisionText = v; persistWS(); }
+  function onInitialScoreChange(v) { WS.initialScoreEstimate = v; persistWS(); }
+  function snapshotInitial() {
+    WS.initialSnapshot = { inputs: { ...WS.inputs }, pnl: Engine.computePnL(WS.inputs), decision: WS.initialDecisionText, timestamp: new Date().toISOString() };
+    persistWS();
+    preserveScroll(() => renderCoachBody(getCaseById(WS.caseId)));
+  }
+  function addAssumptionEntry() {
+    const text = document.getElementById('assumeText').value.trim();
+    const confidence = document.getElementById('assumeConf').value;
+    if (!text) return;
+    DataStore.addAssumptionLog(WS.caseId, { text, confidence, ts: new Date().toISOString() });
+    preserveScroll(() => renderCoachBody(getCaseById(WS.caseId)));
+  }
+  // 把每個角色的主問題與追問攤平成一個依序進行的queue，回答完主問題後可顯示參考回答
+  function getChallengeQueue(caseId) {
+    const personas = CHALLENGE_QUESTIONS[caseId] || [];
+    const queue = [];
+    personas.forEach((p) => {
+      queue.push({ persona: p.persona, personaZh: p.personaZh, question: p.question, isMain: true, referenceAnswer: p.referenceAnswer });
+      (p.followUps || []).forEach((fu) => queue.push({ persona: p.persona, personaZh: p.personaZh, question: fu, isMain: false }));
+    });
+    return queue;
+  }
+  function answerChallenge() {
+    const queue = getChallengeQueue(WS.caseId);
+    const current = queue[WS.challengeAnswers.length];
+    if (!current) return;
+    const answer = document.getElementById('challengeAnswerBox').value.trim();
+    if (!answer) return;
+    WS.challengeAnswers.push({
+      persona: current.persona, personaZh: current.personaZh, question: current.question,
+      answer, isMain: current.isMain,
+      referenceAnswer: current.isMain ? current.referenceAnswer : undefined,
+    });
+    persistWS();
+    preserveScroll(() => renderCoachBody(getCaseById(WS.caseId)));
+  }
+  function onCorrectionsChange(v) { WS.corrections = v; persistWS(); }
+  function toggleRefAnswer(id) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = !el.hidden;
+  }
+
+  function renderReviewMode(c) {
+    const total = computeRubricTotal();
+    return `<div class="mode-intro">${esc(MODE_INTRO.review)}</div>
+      ${RUBRIC.map((r) => `
+        <div class="rubric-row">
+          <div>
+            <div class="rlabel">${esc(r.labelZh)} <span class="rweight">(${r.weight}%)</span></div>
+            <textarea placeholder="評分理由 / 做得好的地方 / 具體錯誤或不足 / 下次應改善的行為" onchange="App.onRubricNoteChange('${r.key}', this.value)">${esc(WS.rubric[r.key]?.note || '')}</textarea>
+          </div>
+          <input type="number" min="0" max="100" value="${esc(WS.rubric[r.key]?.score ?? '')}" oninput="App.onRubricScoreChange('${r.key}', this.value)" />
+        </div>`).join('')}
+      <div class="flex-between"><span class="small muted">加權總分（Final Score）</span><span class="score-total">${total.toFixed(1)}</span></div>
+      <hr class="sep"/>
+      <h4>常見錯誤自我檢核</h4>
+      <div class="checklist">
+        ${MISTAKE_TAGS.map((t) => `<label><input type="checkbox" ${WS.mistakeTags.includes(t) ? 'checked' : ''} onchange="App.toggleMistakeTag('${t}', this.checked)" />${esc(MISTAKE_TAG_LABELS[t])}</label>`).join('')}
+      </div>
+      <hr class="sep"/>
+      <div class="field"><label>你的最終建議（Final Decision）</label>
+        <textarea onchange="App.onFinalDecisionChange(this.value)">${esc(WS.finalDecision)}</textarea></div>
+      <div class="grid grid-2">
+        <div class="field"><label>Confidence Before（1–10）</label><input type="number" min="1" max="10" value="${WS.confidenceBefore}" oninput="App.onConfChange('confidenceBefore', this.value)"/></div>
+        <div class="field"><label>Confidence After（1–10）</label><input type="number" min="1" max="10" value="${WS.confidenceAfter}" oninput="App.onConfChange('confidenceAfter', this.value)"/></div>
+      </div>
+      <div class="field"><label>Skills Demonstrated</label><textarea onchange="App.onMetaChange('skillsDemonstrated', this.value)">${esc(WS.skillsDemonstrated)}</textarea></div>
+      <div class="field"><label>Skills Requiring Improvement</label><textarea onchange="App.onMetaChange('skillsToImprove', this.value)">${esc(WS.skillsToImprove)}</textarea></div>
+      <div class="field"><label>Biggest Blind Spot</label><textarea onchange="App.onMetaChange('blindSpot', this.value)">${esc(WS.blindSpot)}</textarea></div>
+      <div class="field"><label>One Transferable Lesson</label><textarea onchange="App.onMetaChange('transferableLesson', this.value)">${esc(WS.transferableLesson)}</textarea></div>
+      <button class="btn" onclick="App.finalizeSession()">完成本次練習並存檔</button>`;
+  }
+  function computeRubricTotal() {
+    let total = 0;
+    RUBRIC.forEach((r) => { const s = Number(WS.rubric[r.key]?.score) || 0; total += s * (r.weight / 100); });
+    return total;
+  }
+  function onRubricScoreChange(key, v) { WS.rubric[key] = { ...(WS.rubric[key] || {}), score: v }; persistWS(); document.querySelector('.score-total').textContent = computeRubricTotal().toFixed(1); }
+  function onRubricNoteChange(key, v) { WS.rubric[key] = { ...(WS.rubric[key] || {}), note: v }; persistWS(); }
+  function toggleMistakeTag(t, checked) { WS.mistakeTags = checked ? [...new Set([...WS.mistakeTags, t])] : WS.mistakeTags.filter((x) => x !== t); persistWS(); }
+  function onFinalDecisionChange(v) { WS.finalDecision = v; persistWS(); }
+  function onConfChange(k, v) { WS[k] = Number(v); persistWS(); }
+  function onMetaChange(k, v) { WS[k] = v; persistWS(); }
+
+  function finalizeSession() {
+    const c = getCaseById(WS.caseId);
+    const finalPnl = Engine.computePnL(WS.inputs);
+    const finalTotal = computeRubricTotal();
+    const sessionId = 'sess-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const session = {
+      sessionId,
+      date: new Date().toISOString(),
+      caseId: c.id,
+      industry: c.industry,
+      initialDecision: WS.initialDecisionText,
+      decisionAnswers: { ...WS.decisionAnswers },
+      initialAssumptions: DataStore.getAssumptionLog(c.id).map((a) => `[${a.confidence}] ${a.text}`),
+      initialPnlResult: WS.initialSnapshot ? WS.initialSnapshot.pnl : null,
+      challengeTranscript: WS.challengeAnswers.map((a) => ({ persona: a.personaZh + (a.isMain ? '' : ' · 追問'), question: a.question, answer: a.answer })),
+      questionsAskedByClaude: WS.challengeAnswers.map((a) => a.question),
+      userAnswers: WS.challengeAnswers.map((a) => a.answer),
+      corrections: WS.corrections,
+      finalDecision: WS.finalDecision,
+      finalPnlResult: finalPnl,
+      initialScore: WS.initialScoreEstimate === '' ? null : Number(WS.initialScoreEstimate),
+      finalScore: { total: Math.round(finalTotal * 10) / 10, byCategory: RUBRIC.reduce((acc, r) => { acc[r.key] = { score: Number(WS.rubric[r.key]?.score) || 0, note: WS.rubric[r.key]?.note || '' }; return acc; }, {}) },
+      skillsDemonstrated: WS.skillsDemonstrated,
+      skillsRequiringImprovement: WS.skillsToImprove,
+      biggestBlindSpot: WS.blindSpot,
+      transferableLesson: WS.transferableLesson,
+      confidenceBefore: WS.confidenceBefore,
+      confidenceAfter: WS.confidenceAfter,
+      mistakeTags: WS.mistakeTags,
+    };
+    DataStore.addSession(session);
+    alert('已存檔本次Session紀錄！可至Progress與Portfolio頁面查看。');
+    navigate('progress');
+  }
+
+  // ============================================================ PROGRESS
+  function renderProgress() {
+    const sessions = DataStore.get().sessions;
+    const completedCases = new Set(sessions.map((s) => s.caseId)).size;
+    const avgScore = average(sessions.map((s) => s.finalScore?.total));
+    const avgInitial = average(sessions.map((s) => s.initialScore));
+    const byIndustry = {};
+    sessions.forEach((s) => (byIndustry[s.industry] = (byIndustry[s.industry] || 0) + 1));
+    const byMonth = {};
+    sessions.forEach((s) => { const mk = monthKey(s.date); if (!byMonth[mk]) byMonth[mk] = []; byMonth[mk].push(s.finalScore?.total || 0); });
+    const monthRows = Object.entries(byMonth).sort().map(([mk, arr]) => ({ mk, avg: average(arr) }));
+    const rubricAvg = {};
+    RUBRIC.forEach((r) => { rubricAvg[r.key] = average(sessions.map((s) => s.finalScore?.byCategory?.[r.key]?.score)); });
+    const mistakeCounts = {};
+    sessions.forEach((s) => (s.mistakeTags || []).forEach((t) => (mistakeCounts[t] = (mistakeCounts[t] || 0) + 1)));
+    const topMistakes = Object.entries(mistakeCounts).sort((a, b) => b[1] - a[1]);
+    const maxIndustryCount = Math.max(1, ...Object.values(byIndustry));
+    const maxRubric = 100;
+
+    root().innerHTML = `
+      <h1 class="page-title">Progress</h1>
+      <p class="page-desc">個人能力成長趨勢 — 不只看總分，保留每一次評分的理由與證據</p>
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="v">${completedCases}</div><div class="l">Completed Cases</div></div>
+        <div class="kpi-tile alt"><div class="v">${sessions.length}</div><div class="l">Total Practice Sessions</div></div>
+        <div class="kpi-tile alt"><div class="v">${avgScore != null ? avgScore.toFixed(1) : '—'}</div><div class="l">Average Score</div></div>
+        <div class="kpi-tile alt"><div class="v">${avgInitial != null ? avgInitial.toFixed(1) : '—'} → ${avgScore != null ? avgScore.toFixed(1) : '—'}</div><div class="l">Initial vs Final Score</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>Cases by Industry</h3>
+          ${Object.keys(byIndustry).length ? Object.entries(byIndustry).map(([ind, n]) => `
+            <div class="sens-row"><div class="sens-label">${esc(getIndustry(ind)?.labelZh || ind)}</div>
+              <div class="sens-track"><div class="sens-bar" style="left:0;width:${(n / maxIndustryCount) * 100}%;"></div></div>
+              <div class="sens-val">${n}</div></div>`).join('') : '<p class="muted small">尚無資料。</p>'}
+        </div>
+        <div class="card">
+          <h3>各項能力分數（Rubric平均）</h3>
+          <p class="small muted">對應規格能力：P&amp;L Accuracy≈Financial Accuracy、A&amp;P Allocation Skill≈A&amp;P Allocation、Executive Recommendation≈Executive Communication；Pricing／Channel Economics／Sensitivity Analysis能力可由Commercial Reasoning、Assumption Quality、Risk Recognition綜合觀察。</p>
+          ${RUBRIC.map((r) => `
+            <div class="sens-row"><div class="sens-label">${esc(r.labelZh)}</div>
+              <div class="sens-track"><div class="sens-bar" style="left:0;width:${rubricAvg[r.key] != null ? (rubricAvg[r.key] / maxRubric) * 100 : 0}%;"></div></div>
+              <div class="sens-val">${rubricAvg[r.key] != null ? rubricAvg[r.key].toFixed(1) : '—'}</div></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Monthly Score Trend</h3>
+        ${monthRows.length ? `<div class="table-wrap"><table><thead><tr><th>月份</th><th>平均分數</th></tr></thead><tbody>
+          ${monthRows.map((r) => `<tr><td>${r.mk}</td><td class="val">${r.avg.toFixed(1)}</td></tr>`).join('')}
+        </tbody></table></div>` : '<p class="muted small">尚無資料。</p>'}
+      </div>
+
+      <div class="card">
+        <h3>Most Frequent Mistakes</h3>
+        ${topMistakes.length ? `<ol>${topMistakes.map(([t, n]) => `<li>${esc(MISTAKE_TAG_LABELS[t] || t)}（${n}次）</li>`).join('')}</ol>` : '<p class="muted small">尚無資料。</p>'}
+      </div>
+
+      <div class="card">
+        <h3>所有Session紀錄（含評分理由與證據）</h3>
+        ${sessions.length ? sessions.slice().reverse().map((s) => `
+          <details class="glossary-item">
+            <summary>${new Date(s.date).toLocaleString('zh-Hant-TW')} · ${esc(getCaseById(s.caseId)?.title || s.caseId)} · Final Score ${s.finalScore?.total ?? '—'}</summary>
+            <div class="row"><b>Initial Decision：</b>${esc(s.initialDecision) || '—'}</div>
+            <div class="row"><b>Final Decision：</b>${esc(s.finalDecision) || '—'}</div>
+            <div class="row"><b>Operating Profit（Final）：</b>${fmtMoney(s.finalPnlResult?.operatingProfit || 0)}</div>
+            ${RUBRIC.map((r) => `<div class="row"><b>${esc(r.labelZh)}（${s.finalScore?.byCategory?.[r.key]?.score ?? 0}分）：</b>${esc(s.finalScore?.byCategory?.[r.key]?.note) || '（未填寫理由）'}</div>`).join('')}
+            <div class="row"><b>Biggest Blind Spot：</b>${esc(s.biggestBlindSpot) || '—'}</div>
+            <div class="row"><b>Transferable Lesson：</b>${esc(s.transferableLesson) || '—'}</div>
+          </details>`).join('') : '<p class="muted small">尚無紀錄。</p>'}
+      </div>
+    `;
+  }
+
+  // ============================================================ PORTFOLIO
+  function renderPortfolio() {
+    const sessions = DataStore.get().sessions;
+    const notes = DataStore.get().portfolioNotes;
+    const published = sessions.filter((s) => notes[s.sessionId]?.published);
+    const unpublished = sessions.filter((s) => !notes[s.sessionId]?.published);
+    root().innerHTML = `
+      <h1 class="page-title">Portfolio</h1>
+      <p class="page-desc">面試安全版本的案例研究 — 去識別化、可公開展示的商業判斷成果</p>
+      <div class="card">
+        <h3>系統方法論</h3>
+        <p class="small">Business Decision Lab 以固定財務引擎（見案例Workspace的「公式小抄」）計算每次練習的P&amp;L，
+        並透過Case／Model／Challenge／Review四種模式，訓練將行銷決策連結到Revenue、Gross Profit與Operating Profit的判斷力。
+        下方每一份案例研究皆為去識別化之模擬練習成果，不代表任何真實公司之機密資料或真實財務數字。</p>
+      </div>
+
+      ${published.length ? published.slice().reverse().map((s) => {
+        const c = getCaseById(s.caseId);
+        const accent = getIndustryTheme(c?.industry).accent;
+        return `<div class="case-study" style="--case-accent:${accent};">
+          ${renderPortfolioWriteup(s, c)}
+          <div class="cs-toggle-row">
+            <span class="small muted">已加入Portfolio展示</span>
+            <span>
+              <button class="btn small" onclick="App.askClaudeCoach('${s.sessionId}')">🎓 詢問 Claude Coach 點評</button>
+              <button class="btn small" onclick="App.exportPortfolioStatic('${s.sessionId}')">匯出成獨立網頁（可傳給面試官）</button>
+              <button class="btn secondary small" onclick="App.togglePortfolioPublish('${s.sessionId}')">從Portfolio移除</button>
+            </span>
+          </div>
+        </div>`;
+      }).join('') : ''}
+
+      ${unpublished.length ? `<div class="card">
+        <h3>尚未加入Portfolio的Session</h3>
+        ${unpublished.slice().reverse().map((s) => {
+          const c = getCaseById(s.caseId);
+          return `<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--line);">
+            <span class="small">${esc(c?.title || s.caseId)} <span class="muted">· ${new Date(s.date).toLocaleDateString('zh-Hant-TW')} · Final Score ${s.finalScore?.total ?? '—'}</span></span>
+            <button class="btn small" onclick="App.togglePortfolioPublish('${s.sessionId}')">加入Portfolio</button>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+
+      ${!sessions.length ? '<div class="card"><p class="muted">完成Review Mode並存檔後，Session會出現在這裡供你選擇是否加入Portfolio。</p></div>' : ''}
+    `;
+  }
+  function togglePortfolioPublish(sessionId) {
+    const cur = DataStore.get().portfolioNotes[sessionId]?.published || false;
+    DataStore.setPortfolioPublished(sessionId, !cur);
+    renderPortfolio();
+  }
+  function renderPortfolioWriteup(s, c) {
+    const pnl = s.finalPnlResult || {};
+    const toIndex = (v) => pnl.companyNetRevenue ? Math.round((v / pnl.companyNetRevenue) * 100) : 0;
+    const transcript = s.challengeTranscript && s.challengeTranscript.length
+      ? s.challengeTranscript
+      : (s.questionsAskedByClaude || []).map((q, i) => ({ persona: '', question: q, answer: (s.userAnswers || [])[i] || '' }));
+    const finalRecommendation = s.decisionAnswers && s.decisionAnswers[4] ? s.decisionAnswers[4] : s.finalDecision;
+
+    const section = (num, title, bodyHtml) => `
+      <div class="cs-section">
+        <div class="cs-num">${num}</div>
+        <div><h4>${esc(title)}</h4>${bodyHtml}</div>
+      </div>`;
+
+    return `
+      <div class="cs-header">
+        <div class="cs-mark">${renderMark(c?.industry)}</div>
+        <div>
+          <div class="cs-eyebrow">Simulated Business Case · Portfolio</div>
+          <div class="cs-title">${esc(c?.title || s.caseId)}</div>
+          <div class="cs-meta">
+            <span>${esc(getIndustry(c?.industry)?.labelZh || '')}</span>
+            <span>${esc(c?.mainSkill || '')}</span>
+            <span>${new Date(s.date).toLocaleDateString('zh-Hant-TW')}</span>
+            <span>Final Score ${s.finalScore?.total ?? '—'} / 100</span>
+          </div>
+        </div>
+      </div>
+      <div class="cs-body">
+        ${section('01', 'Business Challenge', `<p>${esc(c?.managementDecision)}</p>`)}
+        ${section('02', 'Data and Assumptions', (s.initialAssumptions || []).length
+          ? `<ul>${s.initialAssumptions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>`
+          : `<p class="muted">假設請見案例Financial Inputs中標示為Claude assumption的欄位。</p>`)}
+        ${section('03', 'Financial Model', `
+          <p class="muted small" style="margin-top:-4px;">以Company Net Revenue為基準（Index = 100）呈現，實際金額已去識別化。</p>
+          <div class="cs-stats">
+            <div class="cs-stat"><div class="n">100</div><div class="l">Net Revenue Index</div></div>
+            <div class="cs-stat"><div class="n">${toIndex(pnl.grossProfit)}</div><div class="l">Gross Profit Index</div></div>
+            <div class="cs-stat"><div class="n">${toIndex(pnl.operatingProfit)}</div><div class="l">Operating Profit Index</div></div>
+            <div class="cs-stat"><div class="n">${fmtPct(pnl.operatingMarginPct || 0)}</div><div class="l">Operating Margin</div></div>
+          </div>`)}
+        ${section('04', 'Strategic Options', `<ul>${(c?.decisionSubQuestions || []).map((q) => `<li>${esc(q)}</li>`).join('')}</ul>`)}
+        ${section('05', 'Decision', `<div class="cs-recommend">${esc(s.finalDecision) || '—'}</div>`)}
+        ${section('06', 'Sensitivity Analysis', `<p>此決策已針對售價、銷量、通路margin、成本與A&amp;P投入進行±1%／5%／10%敏感度分析，並找出使Operating Profit轉為虧損的關鍵門檻，確認建議在合理情境範圍內仍然成立。</p>`)}
+        ${section('07', 'Claude Challenge', transcript.length ? transcript.map((t) => `
+          <div class="cs-qa">
+            ${t.persona ? `<div class="persona">${esc(t.persona)}</div>` : ''}
+            <div class="q">"${esc(t.question)}"</div>
+            <div class="a">${esc(t.answer) || '—'}</div>
+          </div>`).join('') : '<p class="muted">—</p>')}
+        ${section('08', 'Final Recommendation', `<div class="cs-recommend">${esc(finalRecommendation) || '—'}</div>`)}
+        ${section('09', 'Key Learning', `<p>${esc(s.transferableLesson) || '—'}</p>`)}
+        ${section('10', 'Transferable Application', `<p>${esc(s.skillsDemonstrated) || '—'}</p>`)}
+        ${section('11', 'Claude Coach 教練點評', renderCoachBlock(s))}
+      </div>
+      <div class="cs-disclosure">此為模擬練習成果，品牌、人物與數字皆為虛構／去識別化假設情境，僅供商業判斷能力展示，非任何真實公司之機密資料。</div>
+    `;
+  }
+
+  // Claude Coach區塊：顯示已生成的點評，或提供「詢問」按鈕前的說明狀態。
+  // 實際生成邏輯在 askClaudeCoach()，這裡只負責渲染目前狀態，資料存在
+  // session.coachFeedback，所以重整頁面／重新打開Portfolio都不會消失。
+  function renderCoachBlock(s) {
+    const fb = s.coachFeedback;
+    if (s.coachFeedbackLoading) {
+      return `<p class="coach-loading">Claude Coach 正在分析你的答案，請稍候…</p>`;
+    }
+    if (!fb) {
+      return `<p class="muted small">點下方「🎓 詢問 Claude Coach 點評」，讓Claude針對你這次的答案給出客觀評分，並提供幾個你可能沒想到的詮釋角度。（僅限在Claude Artifact中使用，且需要你已經完成Review Mode並填寫真實答案，否則Claude沒有內容可以分析）</p>`;
+    }
+    return `<div class="coach-card">
+      <div class="coach-score">${esc(fb.score ?? '—')}<span class="small muted" style="font-family:var(--font-body);font-weight:400;"> / 100</span></div>
+      <p style="margin-top:8px;">${esc(fb.critique || '')}</p>
+      ${(fb.perspectives || []).map((p) => `
+        <div class="coach-angle">
+          <b>${esc(p.angle)}：</b>${esc(p.insight)}
+        </div>`).join('')}
+      ${fb.encouragement ? `<p class="small" style="margin-top:8px;">${esc(fb.encouragement)}</p>` : ''}
+      <p class="small muted" style="margin-top:10px;">由 Claude 即時生成，僅供練習參考，非正式績效評估。</p>
+    </div>`;
+  }
+
+  // 匯出單一Session為「獨立、不依賴localStorage」的靜態HTML檔案。
+  // 用途：下載後上傳至Google Drive（設為「知道連結的人可查看」），
+  // 即可產生一個任何裝置、任何人都能打開的網址，供面試展示使用——
+  // 不需要對方也打開這個App、也不需要對方的瀏覽器裡有你的練習紀錄。
+  async function exportPortfolioStatic(sessionId) {
+    const sessions = DataStore.get().sessions;
+    const s = sessions.find((x) => x.sessionId === sessionId);
+    if (!s) { alert('找不到這筆Session紀錄。'); return; }
+    const c = getCaseById(s.caseId);
+
+    // 沿用目前頁面已經載入的完整CSS（同一套設計系統），確保匯出後
+    // 排版與App內看到的Portfolio頁面一致，不需要另外維護一份樣式。
+    const styleTag = document.querySelector('style');
+    const css = styleTag ? styleTag.textContent : '';
+
+    const writeupHtml = renderPortfolioWriteup(s, c);
+    const stamp = new Date().toISOString().slice(0, 10);
+    const titleText = `${c?.title || s.caseId} — Business Decision Lab Portfolio`;
+
+    const html = `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>${esc(titleText)}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+${css}
+/* 匯出版專用：這是靜態展示頁，不是完整App，隱藏App外殼與互動按鈕 */
+body { background: var(--paper); padding: 24px 16px 60px; }
+.export-shell { max-width: 900px; margin: 0 auto; }
+.export-note { max-width: 900px; margin: 0 auto 20px; padding: 12px 16px; background: var(--disclosure-bg); border: 1px solid var(--disclosure-border); color: var(--disclosure-text); border-radius: var(--radius); font-family: var(--font-body); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="export-note">此頁為 Business Decision Lab 練習成果之靜態展示版本，於 ${esc(stamp)} 匯出，內容獨立於原App，可直接分享網址供面試官查看。</div>
+<div class="export-shell">
+  <div class="case-study" style="--case-accent:${getIndustryTheme(c?.industry).accent};">${writeupHtml}</div>
+</div>
+</body>
+</html>`;
+
+    const filename = `portfolio_${(s.caseId || 'case')}_${stamp}.html`;
+    await DataStore.downloadFile(filename, 'text/html', html);
+    alert('已下載靜態網頁檔案！下一步：上傳到Google Drive，右鍵選擇「共用」→「知道連結的使用者」→「檢視者」，複製連結即可傳給面試官。');
+  }
+
+  // Claude Coach：呼叫Claude API，針對這次Session的真實答案給出客觀評分
+  // ＋多角度詮釋建議。僅在Claude Artifact環境可用（window.claude存在），
+  // 因為Apps Script網頁沒有這個橋接，無法免費呼叫API。
+  async function askClaudeCoach(sessionId) {
+    const sessions = DataStore.get().sessions;
+    const s = sessions.find((x) => x.sessionId === sessionId);
+    if (!s) { alert('找不到這筆Session紀錄。'); return; }
+    const c = getCaseById(s.caseId);
+
+    if (!(window.claude && typeof window.claude.use === 'function')) {
+      alert('Claude Coach功能目前只能在Claude Artifact中使用（免費），Google Apps Script網頁版本無法呼叫（需要你自己的Anthropic API key才能啟用）。');
+      return;
+    }
+    if (!s.finalDecision && !s.transferableLesson) {
+      alert('這個Session看起來還沒有填寫真實答案（Decision／Key Learning是空的），Claude Coach需要有內容才能分析。請先完成Review Mode並認真填答。');
+      return;
+    }
+
+    DataStore.updateSession(sessionId, { coachFeedbackLoading: true });
+    renderPortfolio();
+
+    const pnl = s.finalPnlResult || {};
+    const toIndex = (v) => (pnl.companyNetRevenue ? Math.round((v / pnl.companyNetRevenue) * 100) : 0);
+    const transcriptText = (s.challengeTranscript || []).map((t) => `Q: ${t.question}\nA: ${t.answer || '(未答)'}`).join('\n\n');
+
+    const prompt = `你是一位資深商業教練（Claude Coach），有實際產業經驗，正在指導一位行銷主管練習P&L商業決策案例。
+請針對以下這次練習，用繁體中文給出「具體、貼近現實產業做法」的教練點評——不要講空泛的萬用句（例如「要注意風險」「持續優化」這種沒有實質內容的話）。
+
+如果你需要查證這個產業的實際慣例、常見數字量級、真實案例（例如：這個產業典型的通路margin範圍、A&P占營收比例、消費者行為慣例等），可以使用web search確認後再作答，讓建議真的貼近現實，而不是憑空套框架。每個視角都必須具體引用使用者自己填的數字或決策內容，不能只是通用建議。
+
+【產業】${getIndustry(c?.industry)?.labelZh || ''}（${getIndustry(c?.industry)?.label || ''}）
+【案例背景】${c?.managementDecision || ''}
+【使用者的最終決策】${s.finalDecision || '（未填寫）'}
+【使用者的最終建議】${s.decisionAnswers?.[4] || s.finalDecision || '（未填寫）'}
+【Challenge問答紀錄】${transcriptText || '（無）'}
+【使用者寫的關鍵學習】${s.transferableLesson || '（未填寫）'}
+【財務結果（Index，Net Revenue=100）】Gross Profit Index=${toIndex(pnl.grossProfit)}，Operating Profit Index=${toIndex(pnl.operatingProfit)}，Operating Margin=${pnl.operatingMarginPct ? Math.round(pnl.operatingMarginPct * 100) + '%' : '—'}
+
+完成任何查證後，最後只回傳JSON（不要任何前言、不要markdown code fence），格式如下：
+{
+  "score": 0到100的整數,
+  "critique": "80字以內的整體評語，必須具體引用使用者填的數字或決策，指出優點與可以更好的地方",
+  "perspectives": [
+    {"angle": "一個簡短的視角名稱，例如「現金流視角」", "insight": "用同一組數字換一個角度解讀，必須具體、盡量對照該產業真實做法，60字以內"},
+    {"angle": "另一個視角，例如「競爭者反應視角」", "insight": "60字以內，具體"},
+    {"angle": "第三個視角，例如「長期品牌權益視角」", "insight": "60字以內，具體"}
+  ],
+  "encouragement": "一句鼓勵的話，30字以內"
+}`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }],
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        }),
+      });
+      const data = await response.json();
+      const textBlocks = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n');
+      const raw = textBlocks.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(raw);
+      DataStore.updateSession(sessionId, { coachFeedback: parsed, coachFeedbackLoading: false });
+    } catch (e) {
+      console.error('[Claude Coach] failed', e);
+      DataStore.updateSession(sessionId, { coachFeedbackLoading: false });
+      alert('Claude Coach分析失敗，請稍後再試一次。錯誤：' + (e && e.message ? e.message : '未知錯誤'));
+    }
+    renderPortfolio();
+  }
+
+  // ============================================================ DATA PANEL
+  function renderDataPanel() {
+    const store = DataStore.get();
+    root().innerHTML = `
+      <h1 class="page-title">資料管理</h1>
+      <p class="page-desc">Version ${esc(DataStore.STORE_VERSION)} · Last saved: ${store.lastSaved ? new Date(store.lastSaved).toLocaleString('zh-Hant-TW') : '—'}</p>
+      <div class="disclosure">
+        v1 儲存方式：瀏覽器localStorage（重新整理／關閉頁面後紀錄不會消失，但僅存在於這一台裝置與這個瀏覽器）＋ JSON Export／Import。
+        建議定期「匯出JSON」並手動上傳到Google雲端硬碟／Google Space保存，作為跨裝置備份。
+        直接串接Google Sheets／Drive、Supabase、SQLite或GitHub repository需要OAuth或後端服務，屬於下一輪迭代規劃（見頁尾Roadmap）。
+      </div>
+      <div class="card">
+        <h3>Export / Import / Reset</h3>
+        <button class="btn" onclick="DataStore.downloadExport()">匯出 JSON（下載備份）</button>
+        <button class="btn secondary" onclick="document.getElementById('importFile').click()">匯入 JSON</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none;" onchange="App.handleImportFile(this.files[0])" />
+        <button class="btn danger" onclick="App.handleReset()">Reset（清除所有本機紀錄）</button>
+        <p class="small muted" style="margin-top:10px;">Sessions：${store.sessions.length} 筆 ／ Assumption logs：${Object.values(store.assumptionLogs).reduce((a, b) => a + b.length, 0)} 筆</p>
+      </div>
+    `;
+  }
+  function handleImportFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        if (!confirm('匯入將會覆蓋目前本機的所有紀錄，確定要繼續嗎？')) return;
+        DataStore.importJSON(reader.result);
+        alert('匯入成功！');
+        render();
+      } catch (e) { alert('匯入失敗：' + e.message); }
+    };
+    reader.readAsText(file);
+  }
+  function handleReset() {
+    if (!confirm('確定要清除所有練習紀錄嗎？此動作無法復原，建議先匯出JSON備份。')) return;
+    if (!confirm('再次確認：這將刪除所有Session、Assumption Log與草稿資料。')) return;
+    DataStore.reset();
+    render();
+  }
+
+  // ============================================================ init
+  function init() {
+    window.addEventListener('hashchange', onHashChange);
+    // 修正1（續）：使用者打字時即時增高目前這個textarea。
+    document.addEventListener('input', (e) => { if (e.target && e.target.tagName === 'TEXTAREA') autoGrowTextarea(e.target); });
+    // 修正1（續）：每次畫面重繪（切換案例／切換Coach分頁／送出答案等）後，
+    // 把當下所有textarea都依照已存的內容重新量一次高度——
+    // 確保「之前已經填好、現在只是換頁回來看」的答案，一樣完整展開不必內部捲動。
+    const observer = new MutationObserver(() => autoGrowAllTextareas());
+    observer.observe(document.getElementById('appRoot'), { childList: true, subtree: true });
+    render();
+  }
+
+  return {
+    init, navigate,
+    setLibraryFilter,
+    onInputChange, applyScenario, onDecisionAnswerChange,
+    toggleFormulaInfo,
+    setCoachMode,
+    onInitialDecisionChange, onInitialScoreChange, snapshotInitial, addAssumptionEntry,
+    answerChallenge, onCorrectionsChange, toggleRefAnswer,
+    onRubricScoreChange, onRubricNoteChange, toggleMistakeTag, onFinalDecisionChange, onConfChange, onMetaChange,
+    finalizeSession,
+    togglePortfolioPublish, exportPortfolioStatic, askClaudeCoach,
+    handleImportFile, handleReset,
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', App.init);
+</script>
 </body>
 </html>
