@@ -2870,9 +2870,8 @@ body { background: var(--paper); padding: 24px 16px 60px; }
     // 修正1（續）：每次畫面重繪（切換案例／切換Coach分頁／送出答案等）後，
     // 把當下所有textarea都依照已存的內容重新量一次高度——
     // 確保「之前已經填好、現在只是換頁回來看」的答案，一樣完整展開不必內部捲動。
-    const observer = new MutationObserver(() => autoGrowAllTextareas());
-    observer.observe(document.getElementById('appRoot'), { childList: true, subtree: true });
     render();
+    setTimeout(autoGrowAllTextareas, 0);
   }
 
   return {
